@@ -21,9 +21,18 @@
 #include <PCF8574_MULTI.h>
 
 /*
-   CREAMOE EL OBJETO Y NO LE PASAMOS NINGUN CANAL.
-   POR DEFECTO SE CONFIGURA CON LOS PRIMEROS 8 CANALES.
-   ESTO SE PUEDE MODIFICAR EN CUALQUIER MOMENTO.
+   Creamos el objeto, por defecto se configura para controlar los canales del 1 al 8 y el bus I2C en modo master.
+   Podemos configura el objeto para que use determinados canales y la dirección I2C que queramos.
+
+   Ejemplos:
+      Objeto por defecto I2C modo Master y canales de 1 al 8.
+      PCF8574_MULTI PCF8574_MULTI_A();
+
+      Objeto que le decimos que use los canales de 5 al 11 y el bus I2C en modo Master.
+      PCF8574_MULTI PCF8574_MULTI_A(5, 11);
+
+      Objeto que le decimos que use los canales del 5 al 11 y el bus I2C en modo esclavo en la dirección 0x11.
+      PCF8574_MULTI PCF8574_MULTI_A(5, 11, 0x11);
 */
 PCF8574_MULTI PCF8574_MULTI_A();
 
@@ -31,53 +40,52 @@ PCF8574_MULTI PCF8574_MULTI_A();
 void setup() {
   Serial.begin(9600);
 
+
   /*
-     LE DECIMOS QUE USE LOS 14 PRIMEROS CANALES.
+     Configuramos el objeto para que use los 14 primeros canales.
   */
   PCF8574_MULTI_A.NumeroCanales(14);
 
 
   /*
-     AHORA LE DECIMOS QUE EMPIEZE DESDE EL CANAL 5 CON LO QUE
-     SE QUDARA CONFIGURADO DEL CANAL 5 AL 14.
+     Ahora configuramos el objeto parar que comienza desde el canal número 5.
+     El objeto se quedaría configurado para que se usen los canales de 5 al 14.
   */
   PCF8574_MULTI_A.InitNumeroCanales(5);
 
 
   /*
-     RESETEAMOS TODOS LOS CANALES QUE ESTAN CONFIGURADOS Y LOS PONEMOS EN FALSE
+     Reseteamos todos los canales que están configuradas y los ponemos en false.
   */
   PCF8574_MULTI_A.ResetPinStatus();
 
 
   /*
-     PONEMOS TODOS LOS CANLES CONFIGURADOS EN TRUE.
+     Ponemos todos los canales en modo true.
   */
-  PCF8574_MULTI_A.SetPinStatus(0, TRUE);
+  PCF8574_MULTI_A.SetPinStatus(0, CANAL_STATUS_ON);
 
 
   /*
-     PONEMOS EL PIN 5 Y LUEGO EL 11 EN FALSE
+     Ponemos los canales 5 y 11 en modo False.
   */
-  PCF8574_MULTI_A.SetPinStatus(5, FALSE);
-  PCF8574_MULTI_A.SetPinStatus(11, FALSE);
+  PCF8574_MULTI_A.SetPinStatus(5, CANAL_STATUS_OFF);
+  PCF8574_MULTI_A.SetPinStatus(11, CANAL_STATUS_OFF);
 
 
   /*
-     LEEMOS EL ESTADO DE LOS PINES 5 Y 7
+     Leemos el estado de los canales 5 y 7.
   */
   bool PIN5 = PCF8574_MULTI_A.ReadPinStatus(5);
   bool PIN7 = PCF8574_MULTI_A.ReadPinStatus(7);
 }
 
 void loop() {
-
   /*
-     LEEMOS EL ESTADO DE TODOS LOS PINES
+     Leemos el estado de todos los canales configurados y los enviamos al puerto serie en mod binario.
   */
-  //lememos el estado de todos los pines.
   String vreturn;
   PCF8574_MULTI_A.DebugStatusPin(vreturn);
-  PrintlnSerial(vreturn);
+  Serial.println(vreturn);
   delay(1000);
 }
