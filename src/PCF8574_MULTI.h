@@ -21,24 +21,39 @@
 #ifndef PCF8574_MULTI_H
 #define PCF8574_MULTI_H
 
-#define DEFAULT_DIRECCION_PCF8574_1_I2C 0x38
-#define DEFAULT_DIRECCION_PCF8574_2_I2C 0x39
-#define DEFAULT_DIRECCION_PCF8574_3_I2C 0x40
-#define DEFAULT_DIRECCION_PCF8574_4_I2C 0x41
+#define PCF8574_DIRECCION_1_I2C 0x38
+#define PCF8574_DIRECCION_2_I2C 0x39
+#define PCF8574_DIRECCION_3_I2C 0x40
+#define PCF8574_DIRECCION_4_I2C 0x41
+#define PCF8574_DIRECCION_5_I2C 0x42
+#define PCF8574_DIRECCION_6_I2C 0x43
+#define PCF8574_DIRECCION_7_I2C 0x44
+#define PCF8574_DIRECCION_8_I2C 0x45
+#define PCF8574_DIRECCION_9_I2C 0x46
+
+#define PCF8574_MAX_BOARDS 		9		//NUMERO MAXIMO DE BOARDS QUE SE PUEDEN CONTROLAR
+#define PCF8574_NUM_BOARDS		1		//NUMERO DE BOARDS CONTROLADAS
+#define PCF8574_NUM_CANALES		8		//NUMERO DE CANALES POR DEFECTO
+#define PCF8574_NUM_CANALES_INI	1		//NUMERO DEL CANAL INICIAL POR DEFECTO
+
 
 #include "PCF8574.h"
-
 
 class PCF8574_MULTI
 {
   private:
-    int _numchannels = 8;
-    int _initnumchannel = 1;
+    int _NUM_CHANNELS = PCF8574_NUM_CANALES;
+    int _NUM_CHANNELS_INIT = PCF8574_NUM_CANALES_INI;
+	int _DIRECCION_WIRE = PCF8574_DIRECCION_WIRE;
+	
+	int  PCF8574_MULTI::GetAddressWire();
+	void PCF8574_MULTI::SetAddressWire(int Channel);
 
   public:
     PCF8574_MULTI();
     PCF8574_MULTI(int NewNumChannel);
     PCF8574_MULTI(int NewNumChannel, int InitNumChannel);
+	PCF8574_MULTI(int NewNumChannel, int InitNumChannel, int Address_Wire);
 
     int  PCF8574_MULTI::NumeroCanales();
     void PCF8574_MULTI::NumeroCanales(int NewNumChannel);
@@ -47,8 +62,8 @@ class PCF8574_MULTI
     void PCF8574_MULTI::InitNumeroCanales(int NumChannel);
     
 
-    bool PCF8574_MULTI::SetPinStatus(short pin, bool newstatus);
-    bool PCF8574_MULTI::ReadPinStatus(short pin);
+    bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus);
+    bool PCF8574_MULTI::ReadPinStatus(int pin);
 
     void PCF8574_MULTI::ResetPinStatus();
     void PCF8574_MULTI::DebugStatusPin(String &sreturn);

@@ -32,42 +32,54 @@
  */
 
 PCF8574_MULTI::PCF8574_MULTI() {
-  InitNumeroCanales(1);
-  NumeroCanales(8);
+  this->InitNumeroCanales(PCF8574_NUM_CANALES_INI);
+  this->NumeroCanales(PCF8574_NUM_CANALES);
 }
 
 PCF8574_MULTI::PCF8574_MULTI(int NewNumChannel) {
-  InitNumeroCanales(1);
-  NumeroCanales(NewNumChannel);
+  this->InitNumeroCanales(PCF8574_NUM_CANALES_INI);
+  this->NumeroCanales(NewNumChannel);
+}
+PCF8574_MULTI::PCF8574_MULTI(int NewNumChannel, int InitNumChannel) {
+  this->InitNumeroCanales(InitNumChannel);
+  this->NumeroCanales(NewNumChannel);
+}
+PCF8574_MULTI::PCF8574_MULTI(int NewNumChannel, int InitNumChannel, int Address_Wire) {
+  this->InitNumeroCanales(InitNumChannel);
+  this->NumeroCanales(NewNumChannel);
+  this->SetAddressWire(Address_Wire);
 }
 
-PCF8574_MULTI::PCF8574_MULTI(int NewNumChannel, int InitNumChannel) {
-  InitNumeroCanales(InitNumChannel);
-  NumeroCanales(NewNumChannel);
-}
 
 
 
 int PCF8574_MULTI::NumeroCanales() {
-  return _numchannels;
+  return this->_NUM_CHANNELS;
 }
 void PCF8574_MULTI::NumeroCanales(int NewNumChannel) {
-  _numchannels = NewNumChannel;
+  this->_NUM_CHANNELS = NewNumChannel;
 }
-
 int PCF8574_MULTI::InitNumeroCanales() {
-  return _initnumchannel;
+  return this->_NUM_CHANNELS_INIT;
 }
 void PCF8574_MULTI::InitNumeroCanales(int NumChannel) {
-  _initnumchannel = NumChannel;
+  this->_NUM_CHANNELS_INIT = NumChannel;
 }
+int PCF8574_MULTI::GetAddressWire() {
+  return this->_DIRECCION_WIRE;
+}
+void PCF8574_MULTI::SetAddressWire(int Channel) {
+  this->_DIRECCION_WIRE = Channel;
+}
+
+
 
 
 /*
  * Method Name  : SetPinStatus
  *
- * Synopsis     : bool PCF8574_MULTI::SetPinStatus(short pin, bool newstatus)  *
- * Arguments    : short  pin : Pin del canal que deseamos definir.
+ * Synopsis     : bool PCF8574_MULTI::SetPinStatus(int pin, bool newstatus)  *
+ * Arguments    : int   pin : Pin del canal que deseamos definir.
  *                bool  newstatus : Nuevo estado del canal
  *
  * Description  : Seteamos el canal que le pasamos con el valor que le especificamos.
@@ -76,48 +88,78 @@ void PCF8574_MULTI::InitNumeroCanales(int NumChannel) {
  * Returns      : bool 
  */
 
-bool PCF8574_MULTI::SetPinStatus(short pin, bool newstatus) {
-  if (pin < InitNumeroCanales()) {
+bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
+  if (pin < this->InitNumeroCanales()) {
     return false;
   }
-  if (pin > NumeroCanales()) {
+  if (pin > this->NumeroCanales()) {
     return false;
   }
   
   //TODO: PENDIENTE CONTROLAR SOLO LOS CANALES QUE TENEMOS AJUSTADOS ENTRE LOS CANALES INICIO Y FIN.
   int AddressSelect = 0x0;
   if (pin == 0 ) {
-    PCF8574 _PCF8574_Z_1(DEFAULT_DIRECCION_PCF8574_1_I2C);
-    PCF8574 _PCF8574_Z_2(DEFAULT_DIRECCION_PCF8574_2_I2C);
-    PCF8574 _PCF8574_Z_3(DEFAULT_DIRECCION_PCF8574_3_I2C);
-    PCF8574 _PCF8574_Z_4(DEFAULT_DIRECCION_PCF8574_4_I2C);
+    PCF8574 _PCF8574_Z_1(PCF8574_DIRECCION_1_I2C, this->GetAddressWire());
+    PCF8574 _PCF8574_Z_2(PCF8574_DIRECCION_2_I2C, this->GetAddressWire());
+    PCF8574 _PCF8574_Z_3(PCF8574_DIRECCION_3_I2C, this->GetAddressWire());
+    PCF8574 _PCF8574_Z_4(PCF8574_DIRECCION_4_I2C, this->GetAddressWire());
+	PCF8574 _PCF8574_Z_5(PCF8574_DIRECCION_5_I2C, this->GetAddressWire());
+	PCF8574 _PCF8574_Z_6(PCF8574_DIRECCION_6_I2C, this->GetAddressWire());
+	PCF8574 _PCF8574_Z_7(PCF8574_DIRECCION_7_I2C, this->GetAddressWire());
+	PCF8574 _PCF8574_Z_8(PCF8574_DIRECCION_8_I2C, this->GetAddressWire());
+	PCF8574 _PCF8574_Z_9(PCF8574_DIRECCION_9_I2C, this->GetAddressWire());
     
     _PCF8574_Z_1.SetPinStatus(0, newstatus);
     _PCF8574_Z_2.SetPinStatus(0, newstatus);
     _PCF8574_Z_3.SetPinStatus(0, newstatus);
     _PCF8574_Z_4.SetPinStatus(0, newstatus);
+	_PCF8574_Z_5.SetPinStatus(0, newstatus);
+	_PCF8574_Z_6.SetPinStatus(0, newstatus);
+	_PCF8574_Z_7.SetPinStatus(0, newstatus);
+	_PCF8574_Z_8.SetPinStatus(0, newstatus);
+	_PCF8574_Z_9.SetPinStatus(0, newstatus);
     return true;
   }
   else if (pin <= 8 ) {
-    AddressSelect = DEFAULT_DIRECCION_PCF8574_1_I2C;
+    AddressSelect = PCF8574_DIRECCION_1_I2C;
   }
   else if (pin <= 16 ) {
-    AddressSelect = DEFAULT_DIRECCION_PCF8574_2_I2C;
+    AddressSelect = PCF8574_DIRECCION_2_I2C;
     pin -= 8;
   }
   else if (pin <= 24 ) {
-    AddressSelect = DEFAULT_DIRECCION_PCF8574_3_I2C;
+    AddressSelect = PCF8574_DIRECCION_3_I2C;
     pin -= 16;
   }
   else if (pin <= 32 ) {
-    AddressSelect = DEFAULT_DIRECCION_PCF8574_4_I2C;
+    AddressSelect = PCF8574_DIRECCION_4_I2C;
     pin -= 24;
   }
+  else if (pin <= 64 ) {
+    AddressSelect = PCF8574_DIRECCION_5_I2C;
+    pin -=32 ;
+  }
+  else if (pin <= 128 ) {
+    AddressSelect = PCF8574_DIRECCION_6_I2C;
+    pin -= 64;
+  }
+  else if (pin <= 256 ) {
+    AddressSelect = PCF8574_DIRECCION_7_I2C;
+    pin -= 128;
+  }
+  else if (pin <= 512 ) {
+    AddressSelect = PCF8574_DIRECCION_8_I2C;
+    pin -= 256;
+  }
+  else if (pin <= 1024 ) {
+    AddressSelect = PCF8574_DIRECCION_9_I2C;
+    pin -= 512;
+  }  
   else {
     return false;
   }
   
-  PCF8574 _PCF8574_Z(AddressSelect);
+  PCF8574 _PCF8574_Z(AddressSelect, this->GetAddressWire());
   _PCF8574_Z.SetPinStatus(pin, newstatus);
   return true;
 }
@@ -126,8 +168,8 @@ bool PCF8574_MULTI::SetPinStatus(short pin, bool newstatus) {
 /*
  * Method Name  : ReadPinStatus
  *
- * Synopsis     : bool PCF8574_MULTI::ReadPinStatus(short pin)  *
- * Arguments    : short  pin : Canal que deseamos leer.
+ * Synopsis     : bool PCF8574_MULTI::ReadPinStatus(int pin)  *
+ * Arguments    : int  pin : Canal que deseamos leer.
  *
  * Description  : Lee el estado del pin que le solicitamos.
  * 
@@ -137,35 +179,55 @@ bool PCF8574_MULTI::SetPinStatus(short pin, bool newstatus) {
  *   Tener en cuenta que si el valor de pin es superior o inferior a los
  *   canales configurados retornara siempre false.
  */
-bool PCF8574_MULTI::ReadPinStatus(short pin) {
-  if (pin < InitNumeroCanales()) {
+bool PCF8574_MULTI::ReadPinStatus(int pin) {
+  if (pin < this->InitNumeroCanales()) {
     return false;
   }
-  if (pin > NumeroCanales()) {
+  if (pin > this->NumeroCanales()) {
     return false;
   }
   
   int AddressSelect = 0x0;
   if (pin <= 8 ) {
-    AddressSelect = DEFAULT_DIRECCION_PCF8574_1_I2C;
+    AddressSelect = PCF8574_DIRECCION_1_I2C;
   }
   else if (pin <= 16 ) {
-    AddressSelect = DEFAULT_DIRECCION_PCF8574_2_I2C;
+    AddressSelect = PCF8574_DIRECCION_2_I2C;
     pin -= 8;
   }
   else if (pin <= 24 ) {
-    AddressSelect = DEFAULT_DIRECCION_PCF8574_3_I2C;
+    AddressSelect = PCF8574_DIRECCION_3_I2C;
     pin -= 16;
   }
   else if (pin <= 32 ) {
-    AddressSelect = DEFAULT_DIRECCION_PCF8574_4_I2C;
+    AddressSelect = PCF8574_DIRECCION_4_I2C;
     pin -= 24;
+  }
+  else if (pin <= 64 ) {
+    AddressSelect = PCF8574_DIRECCION_5_I2C;
+    pin -= 32;
+  }
+  else if (pin <= 128 ) {
+    AddressSelect = PCF8574_DIRECCION_6_I2C;
+    pin -= 64;
+  }
+  else if (pin <= 256 ) {
+    AddressSelect = PCF8574_DIRECCION_7_I2C;
+    pin -= 128;
+  }
+  else if (pin <= 512 ) {
+    AddressSelect = PCF8574_DIRECCION_8_I2C;
+    pin -= 256;
+  }
+  else if (pin <= 1024 ) {
+    AddressSelect = PCF8574_DIRECCION_9_I2C;
+    pin -= 512;
   }
   else {
     return false;
   }
 
-  PCF8574 _PCF8574_Z(AddressSelect);
+  PCF8574 _PCF8574_Z(AddressSelect, this->GetAddressWire());
   return _PCF8574_Z.ReadPinStatus(pin);
 }
 
@@ -178,7 +240,7 @@ bool PCF8574_MULTI::ReadPinStatus(short pin) {
  * 
  */
 void PCF8574_MULTI::ResetPinStatus() {
-  SetPinStatus(0, false);
+  this->SetPinStatus(0, false);
 }
 
 
@@ -191,8 +253,8 @@ void PCF8574_MULTI::ResetPinStatus() {
  * 
  */
 void PCF8574_MULTI::DebugStatusPin(String &sreturn) {
-  for (int channel = InitNumeroCanales(); channel <= NumeroCanales(); channel++)
+  for (int channel = this->InitNumeroCanales(); channel <= this->NumeroCanales(); channel++)
   {
-    sreturn = sreturn + ReadPinStatus(channel);
+    sreturn = sreturn + this->ReadPinStatus(channel);
   }
 }
