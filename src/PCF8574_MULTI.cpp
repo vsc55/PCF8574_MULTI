@@ -107,7 +107,6 @@ bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
 	PCF8574 _PCF8574_Z_6(PCF8574_DIRECCION_6_I2C, this->GetAddressWire());
 	PCF8574 _PCF8574_Z_7(PCF8574_DIRECCION_7_I2C, this->GetAddressWire());
 	PCF8574 _PCF8574_Z_8(PCF8574_DIRECCION_8_I2C, this->GetAddressWire());
-	PCF8574 _PCF8574_Z_9(PCF8574_DIRECCION_9_I2C, this->GetAddressWire());
     
     _PCF8574_Z_1.SetPinStatus(0, newstatus);
     _PCF8574_Z_2.SetPinStatus(0, newstatus);
@@ -117,7 +116,6 @@ bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
 	_PCF8574_Z_6.SetPinStatus(0, newstatus);
 	_PCF8574_Z_7.SetPinStatus(0, newstatus);
 	_PCF8574_Z_8.SetPinStatus(0, newstatus);
-	_PCF8574_Z_9.SetPinStatus(0, newstatus);
     return true;
   }
   else if (pin <= 8 ) {
@@ -151,10 +149,6 @@ bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
     AddressSelect = PCF8574_DIRECCION_8_I2C;
     pin -= 256;
   }
-  else if (pin <= 1024 ) {
-    AddressSelect = PCF8574_DIRECCION_9_I2C;
-    pin -= 512;
-  }  
   else {
     return false;
   }
@@ -218,10 +212,6 @@ bool PCF8574_MULTI::ReadPinStatus(int pin) {
   else if (pin <= 512 ) {
     AddressSelect = PCF8574_DIRECCION_8_I2C;
     pin -= 256;
-  }
-  else if (pin <= 1024 ) {
-    AddressSelect = PCF8574_DIRECCION_9_I2C;
-    pin -= 512;
   }
   else {
     return false;
