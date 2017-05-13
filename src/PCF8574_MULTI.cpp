@@ -97,16 +97,17 @@ bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
   }
   
   //TODO: PENDIENTE CONTROLAR SOLO LOS CANALES QUE TENEMOS AJUSTADOS ENTRE LOS CANALES INICIO Y FIN.
+  //TODO: PENDIENTE CONTROLAR LA VERSION DEL CHIP PCF8574 O PCF8574A.
   int AddressSelect = 0x0;
   if (pin == 0 ) {
-    PCF8574 _PCF8574_Z_1(PCF8574_DIRECCION_1_I2C, this->GetAddressWire());
-    PCF8574 _PCF8574_Z_2(PCF8574_DIRECCION_2_I2C, this->GetAddressWire());
-    PCF8574 _PCF8574_Z_3(PCF8574_DIRECCION_3_I2C, this->GetAddressWire());
-    PCF8574 _PCF8574_Z_4(PCF8574_DIRECCION_4_I2C, this->GetAddressWire());
-	PCF8574 _PCF8574_Z_5(PCF8574_DIRECCION_5_I2C, this->GetAddressWire());
-	PCF8574 _PCF8574_Z_6(PCF8574_DIRECCION_6_I2C, this->GetAddressWire());
-	PCF8574 _PCF8574_Z_7(PCF8574_DIRECCION_7_I2C, this->GetAddressWire());
-	PCF8574 _PCF8574_Z_8(PCF8574_DIRECCION_8_I2C, this->GetAddressWire());
+    PCF8574 _PCF8574_Z_1(PCF8574A_DIRECCION_1_I2C, this->GetAddressWire());
+    PCF8574 _PCF8574_Z_2(PCF8574A_DIRECCION_2_I2C, this->GetAddressWire());
+    PCF8574 _PCF8574_Z_3(PCF8574A_DIRECCION_3_I2C, this->GetAddressWire());
+    PCF8574 _PCF8574_Z_4(PCF8574A_DIRECCION_4_I2C, this->GetAddressWire());
+	PCF8574 _PCF8574_Z_5(PCF8574A_DIRECCION_5_I2C, this->GetAddressWire());
+	PCF8574 _PCF8574_Z_6(PCF8574A_DIRECCION_6_I2C, this->GetAddressWire());
+	PCF8574 _PCF8574_Z_7(PCF8574A_DIRECCION_7_I2C, this->GetAddressWire());
+	PCF8574 _PCF8574_Z_8(PCF8574A_DIRECCION_8_I2C, this->GetAddressWire());
     
     _PCF8574_Z_1.SetPinStatus(0, newstatus);
     _PCF8574_Z_2.SetPinStatus(0, newstatus);
@@ -119,34 +120,34 @@ bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
     return true;
   }
   else if (pin <= 8 ) {
-    AddressSelect = PCF8574_DIRECCION_1_I2C;
+    AddressSelect = PCF8574A_DIRECCION_1_I2C;
   }
   else if (pin <= 16 ) {
-    AddressSelect = PCF8574_DIRECCION_2_I2C;
+    AddressSelect = PCF8574A_DIRECCION_2_I2C;
     pin -= 8;
   }
   else if (pin <= 24 ) {
-    AddressSelect = PCF8574_DIRECCION_3_I2C;
+    AddressSelect = PCF8574A_DIRECCION_3_I2C;
     pin -= 16;
   }
   else if (pin <= 32 ) {
-    AddressSelect = PCF8574_DIRECCION_4_I2C;
+    AddressSelect = PCF8574A_DIRECCION_4_I2C;
     pin -= 24;
   }
   else if (pin <= 64 ) {
-    AddressSelect = PCF8574_DIRECCION_5_I2C;
+    AddressSelect = PCF8574A_DIRECCION_5_I2C;
     pin -=32 ;
   }
   else if (pin <= 128 ) {
-    AddressSelect = PCF8574_DIRECCION_6_I2C;
+    AddressSelect = PCF8574A_DIRECCION_6_I2C;
     pin -= 64;
   }
   else if (pin <= 256 ) {
-    AddressSelect = PCF8574_DIRECCION_7_I2C;
+    AddressSelect = PCF8574A_DIRECCION_7_I2C;
     pin -= 128;
   }
   else if (pin <= 512 ) {
-    AddressSelect = PCF8574_DIRECCION_8_I2C;
+    AddressSelect = PCF8574A_DIRECCION_8_I2C;
     pin -= 256;
   }
   else {
@@ -181,36 +182,37 @@ bool PCF8574_MULTI::ReadPinStatus(int pin) {
     return false;
   }
   
+  //TODO: PENDIENTE CONTROLAR LA VERSION DEL CHIP PCF8574 O PCF8574A.
   int AddressSelect = 0x0;
   if (pin <= 8 ) {
-    AddressSelect = PCF8574_DIRECCION_1_I2C;
+    AddressSelect = PCF8574A_DIRECCION_1_I2C;
   }
   else if (pin <= 16 ) {
-    AddressSelect = PCF8574_DIRECCION_2_I2C;
+    AddressSelect = PCF8574A_DIRECCION_2_I2C;
     pin -= 8;
   }
   else if (pin <= 24 ) {
-    AddressSelect = PCF8574_DIRECCION_3_I2C;
+    AddressSelect = PCF8574A_DIRECCION_3_I2C;
     pin -= 16;
   }
   else if (pin <= 32 ) {
-    AddressSelect = PCF8574_DIRECCION_4_I2C;
+    AddressSelect = PCF8574A_DIRECCION_4_I2C;
     pin -= 24;
   }
   else if (pin <= 64 ) {
-    AddressSelect = PCF8574_DIRECCION_5_I2C;
+    AddressSelect = PCF8574A_DIRECCION_5_I2C;
     pin -= 32;
   }
   else if (pin <= 128 ) {
-    AddressSelect = PCF8574_DIRECCION_6_I2C;
+    AddressSelect = PCF8574A_DIRECCION_6_I2C;
     pin -= 64;
   }
   else if (pin <= 256 ) {
-    AddressSelect = PCF8574_DIRECCION_7_I2C;
+    AddressSelect = PCF8574A_DIRECCION_7_I2C;
     pin -= 128;
   }
   else if (pin <= 512 ) {
-    AddressSelect = PCF8574_DIRECCION_8_I2C;
+    AddressSelect = PCF8574A_DIRECCION_8_I2C;
     pin -= 256;
   }
   else {
