@@ -1,6 +1,6 @@
 PCF8574_MULTI	KEYWORD1
-NumeroCanales KEYWORD2
-InitNumeroCanales	KEYWORD2
+NumeroPins 	KEYWORD2
+InitNumeroPin	KEYWORD2
 SetPinStatus	KEYWORD2
 ReadPinStatus	KEYWORD2
 ResetPinStatus	KEYWORD2

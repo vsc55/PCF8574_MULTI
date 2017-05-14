@@ -39,38 +39,48 @@
 #define PCF8574A_DIRECCION_7_I2C 0x3E
 #define PCF8574A_DIRECCION_8_I2C 0x3F
 
-#define PCF8574_MAX_BOARDS 		16		//NUMERO MAXIMO DE BOARDS QUE SE PUEDEN CONTROLAR TANTO PCF8574 y PCF8574A.
-#define PCF8574_NUM_BOARDS		1		//NUMERO DE BOARDS CONTROLADAS
-#define PCF8574_NUM_CANALES		8		//NUMERO DE CANALES POR DEFECTO
-#define PCF8574_NUM_CANALES_INI	1		//NUMERO DEL CANAL INICIAL POR DEFECTO
+#define PCF8574_DIFF_FOR_A		0x18	//NUMERO DE DIRECCIONES DE DIFERENCIA ENTRA PCF8574 Y PCF8574A
 
-#define PCF8574_DEV				1		//REF DEV PCF8574		ADDRESS 0100xxx
-#define PCF8574A_DEV			2		//REF DEV PCF8574A		ADDRESS 0111xxx
+#define PCF8574_MAX_BOARDS 		8		//NUMERO MAXIMO DE BOARDS QUE SE PUEDEN CONTROLAR TANTO PCF8574 y PCF8574A.
+#define PCF8574_MAX_PIN			64		//NUMERO MAXIMO DE CANALES SOPORTADOS
+#define PCF8574_NUM_BOARDS		1		//NUMERO DE BOARDS CONTROLADAS
+#define PCF8574_NUM_PIN			8		//NUMERO DE PINES POR DEFECTO
+#define PCF8574_NUM_PIN_INI		1		//NUMERO DEL PIN INICIAL POR DEFECTO
+
+#define PCF8574_DEV_TYPE		0		//REF DEV PCF8574		ADDRESS 0100xxx
+#define PCF8574A_DEV_TYPE		1		//REF DEV PCF8574A		ADDRESS 0111xxx
 
 #include "PCF8574.h"
 
 class PCF8574_MULTI
 {
   private:
-    int _NUM_CHANNELS = PCF8574_NUM_CANALES;
-    int _NUM_CHANNELS_INIT = PCF8574_NUM_CANALES_INI;
+    int _NUM_PINES = PCF8574_NUM_PIN;
+    int _NUM_PINES_INIT = PCF8574_NUM_PIN_INI;
 	int _DIRECCION_WIRE = PCF8574_DIRECCION_WIRE;
-	int _PCF8574_DEV_INIT = PCF8574A_DEV;
+	byte _PCF8574_DEV_TYPE = PCF8574A_DEV_TYPE;
+	
+	
+	byte PCF8574_MULTI::GetTypeDev();
+	void PCF8574_MULTI::SetTypeDev(byte type);
 	
 	int  PCF8574_MULTI::GetAddressWire();
-	void PCF8574_MULTI::SetAddressWire(int Channel);
+	void PCF8574_MULTI::SetAddressWire(int Address_Wire);
+	
+	int  PCF8574_MULTI::GetAddresByPin(int pin);
 
   public:
     PCF8574_MULTI();
-    PCF8574_MULTI(int NewNumChannel);
-    PCF8574_MULTI(int NewNumChannel, int InitNumChannel);
-	PCF8574_MULTI(int NewNumChannel, int InitNumChannel, int Address_Wire);
+	PCF8574_MULTI(byte typedev);
+    PCF8574_MULTI(byte typedev, int pin);
+    PCF8574_MULTI(byte typedev, int pin, int InitPin);
+	PCF8574_MULTI(byte typedev, int pin, int InitPin, int Address_Wire);
 
-    int  PCF8574_MULTI::NumeroCanales();
-    void PCF8574_MULTI::NumeroCanales(int NewNumChannel);
+    int  PCF8574_MULTI::NumeroPins();
+    bool PCF8574_MULTI::NumeroPins(int pin);
 
-    int  PCF8574_MULTI::InitNumeroCanales();
-    void PCF8574_MULTI::InitNumeroCanales(int NumChannel);
+    int  PCF8574_MULTI::InitNumeroPin();
+    bool PCF8574_MULTI::InitNumeroPin(int pin);
     
 
     bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus);

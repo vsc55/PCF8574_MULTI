@@ -44,14 +44,14 @@ void setup() {
   /*
      Configuramos el objeto para que use los 14 primeros canales.
   */
-  PCF8574_MULTI_A.NumeroCanales(14);
+  PCF8574_MULTI_A.NumeroPins(14);
 
 
   /*
      Ahora configuramos el objeto parar que comienza desde el canal número 5.
      El objeto se quedaría configurado para que se usen los canales de 5 al 14.
   */
-  PCF8574_MULTI_A.InitNumeroCanales(5);
+  PCF8574_MULTI_A.InitNumeroPin(5);
 
 
   /*
@@ -63,14 +63,14 @@ void setup() {
   /*
      Ponemos todos los canales en modo true.
   */
-  PCF8574_MULTI_A.SetPinStatus(0, CANAL_STATUS_ON);
+  PCF8574_MULTI_A.SetPinStatus(0, PIN_STATUS_ON);
 
 
   /*
      Ponemos los canales 5 y 11 en modo False.
   */
-  PCF8574_MULTI_A.SetPinStatus(5, CANAL_STATUS_OFF);
-  PCF8574_MULTI_A.SetPinStatus(11, CANAL_STATUS_OFF);
+  PCF8574_MULTI_A.SetPinStatus(5, PIN_STATUS_OFF);
+  PCF8574_MULTI_A.SetPinStatus(11, PIN_STATUS_OFF);
 
 
   /*
