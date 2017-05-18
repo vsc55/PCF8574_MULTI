@@ -84,7 +84,6 @@ void setup() {
      Leemos el estado de los pines 5 y 7.
      También leeremos el pin 2. Esta opción sí que está disponible siempre. Podremos
      leer el estado de cualquier pin, pero no podremos modificar su estado.
-
   */
   bool ValPIN2 = PCF8574_MULTI_A.ReadPinStatus(2);
   bool ValPIN5 = PCF8574_MULTI_A.ReadPinStatus(5);
