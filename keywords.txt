@@ -1,7 +1,12 @@
 PCF8574_MULTI	KEYWORD1
-NumeroPins 	KEYWORD2
-InitNumeroPin	KEYWORD2
+
+Pins	KEYWORD2
+PinIni	KEYWORD2
+PinEnd	KEYWORD2
+
+PinIsValid	KEYWORD2
 SetPinStatus	KEYWORD2
 ReadPinStatus	KEYWORD2
+
 ResetPinStatus	KEYWORD2
 DebugStatusPin	KEYWORD2

@@ -32,27 +32,28 @@
  */
 
 PCF8574_MULTI::PCF8574_MULTI() {
-  this->SetTypeDev(PCF8574A_DEV_TYPE);
-  this->NumeroPins(PCF8574_NUM_PIN);
-  this->InitNumeroPin(PCF8574_NUM_PIN_INI);
+  this->SetTypeDev(PCF8574_MULTI_DEV_TYPE_PCF8574A);
+  this->Pins(PCF8574_MULTI_NUM_PIN_INI, PCF8574_MULTI_NUM_PIN_END);
   this->SetAddressWire(PCF8574_DIRECCION_WIRE);
 }
 PCF8574_MULTI::PCF8574_MULTI(byte typedev) {
   this->SetTypeDev(typedev);
+  this->Pins(PCF8574_MULTI_NUM_PIN_INI, PCF8574_MULTI_NUM_PIN_END);
+  this->SetAddressWire(PCF8574_DIRECCION_WIRE);
 }
 PCF8574_MULTI::PCF8574_MULTI(byte typedev, int pin) {
   this->SetTypeDev(typedev);
-  this->NumeroPins(pin);
+  this->Pins(PCF8574_MULTI_NUM_PIN_INI, pin);
+  this->SetAddressWire(PCF8574_DIRECCION_WIRE);
 }
-PCF8574_MULTI::PCF8574_MULTI(byte typedev,int pin, int InitPin) {
+PCF8574_MULTI::PCF8574_MULTI(byte typedev,int pinIni, int PinEnd) {
   this->SetTypeDev(typedev);
-  this->NumeroPins(pin);
-  this->InitNumeroPin(InitPin);
+  this->Pins(pinIni, PinEnd);
+  this->SetAddressWire(PCF8574_DIRECCION_WIRE);
 }
-PCF8574_MULTI::PCF8574_MULTI(byte typedev,int pin, int InitPin, int Address_Wire) {
+PCF8574_MULTI::PCF8574_MULTI(byte typedev,int pinIni, int PinEnd, int Address_Wire) {
   this->SetTypeDev(typedev);
-  this->NumeroPins(pin);
-  this->InitNumeroPin(InitPin);
+  this->Pins(pinIni, PinEnd);
   this->SetAddressWire(Address_Wire);
 }
 
@@ -60,19 +61,19 @@ PCF8574_MULTI::PCF8574_MULTI(byte typedev,int pin, int InitPin, int Address_Wire
 
 	
 byte PCF8574_MULTI::GetTypeDev() {
-  return this->_PCF8574_DEV_TYPE;
+  return this->_DEV_TYPE;
 }
 void PCF8574_MULTI::SetTypeDev(byte type) {
-  this->_PCF8574_DEV_TYPE = type;
+  this->_DEV_TYPE = type;
 }
 int PCF8574_MULTI::GetAddressWire() {
-  return this->_DIRECCION_WIRE;
+  return this->_ADDRES_WIRE;
 }
 void PCF8574_MULTI::SetAddressWire(int Address_Wire) {
-  this->_DIRECCION_WIRE = Address_Wire;
+  this->_ADDRES_WIRE = Address_Wire;
 }
 int PCF8574_MULTI::GetAddresByPin(int pin) {
-  if ((pin < 0) || (pin > PCF8574_MAX_PIN)) {
+  if ((pin < 0) || (pin > PCF8574_MULTI_MAX_PIN)) {
     return -1;
   }
   int AddressSelect = 0x0;
@@ -80,78 +81,91 @@ int PCF8574_MULTI::GetAddresByPin(int pin) {
 	return 0;
   }
   else if (pin <= 8 ) {
-    AddressSelect = PCF8574A_DIRECCION_1_I2C;
+    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_1_I2C;
   }
   else if (pin <= 16 ) {
-    AddressSelect = PCF8574A_DIRECCION_2_I2C;
+    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_2_I2C;
     pin -= 8;
   }
   else if (pin <= 24 ) {
-    AddressSelect = PCF8574A_DIRECCION_3_I2C;
+    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_3_I2C;
     pin -= 16;
   }
   else if (pin <= 32 ) {
-    AddressSelect = PCF8574A_DIRECCION_4_I2C;
+    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_4_I2C;
     pin -= 24;
   }
   else if (pin <= 40 ) {
-    AddressSelect = PCF8574A_DIRECCION_5_I2C;
+    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_5_I2C;
     pin -=32 ;
   }
   else if (pin <= 48 ) {
-    AddressSelect = PCF8574A_DIRECCION_6_I2C;
+    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_6_I2C;
     pin -= 40;
   }
   else if (pin <= 56 ) {
-    AddressSelect = PCF8574A_DIRECCION_7_I2C;
+    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_7_I2C;
     pin -= 48;
   }
   else if (pin <= 64 ) {
-    AddressSelect = PCF8574A_DIRECCION_8_I2C;
+    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_8_I2C;
     pin -= 56;
   }
   else {
     return -2;
   }
-  if (this->GetTypeDev() == PCF8574_DEV_TYPE) {
-    AddressSelect -= PCF8574_DIFF_FOR_A;
+  if (this->GetTypeDev() == PCF8574_MULTI_DEV_TYPE_PCF8574) {
+    AddressSelect -= PCF8574_MULTI_DIFF_FOR_A;
   }
   return AddressSelect;
 }
 
 
 
-int PCF8574_MULTI::NumeroPins() {
-  return this->_NUM_PINES;
+
+int PCF8574_MULTI::PinIni() {
+  return this->_NUM_PINES_INI;
 }
-bool PCF8574_MULTI::NumeroPins(int pin) {
+bool PCF8574_MULTI::PinIni(int pin) {
+  /*
+  if ((pin < 0) || (pin > PCF8574_MAX_PIN)) {
+	return false;
+  }
+  if (pin > this->PinEnd()) {
+    return false;
+  }
+  */
+  Serial.print("2SETNEWPIN: "); Serial.println(pin);
+  this->_NUM_PINES_INI = pin;
+  return true;
+}
+int PCF8574_MULTI::PinEnd() {
+  return this->_NUM_PINES_END;
+}
+bool PCF8574_MULTI::PinEnd(int pin) {
   /*
   if ((pin < 0) || (pin > PCF8574_MAX_PIN)) {
 	return false;
   }
   */
   Serial.print("1SETNEWPIN: "); Serial.println(pin);
-  this->_NUM_PINES = pin;
+  this->_NUM_PINES_END = pin;
   return true;
 }
-int PCF8574_MULTI::InitNumeroPin() {
-  return this->_NUM_PINES_INIT;
+bool PCF8574_MULTI::Pins(int pinini, int pinend) {
+	this->PinIni(pinini);
+	this->PinEnd(pinend);
+	return true;
 }
-bool PCF8574_MULTI::InitNumeroPin(int pin) {
-  /*
-  if ((pin < 0) || (pin > PCF8574_MAX_PIN)) {
-	return false;
-  }
-  if (pin > this->NumeroPins()) {
+bool PCF8574_MULTI::PinIsValid(int pin) {
+  if (pin < this->PinIni()) {
     return false;
   }
-  */
-  Serial.print("2SETNEWPIN: "); Serial.println(pin);
-  this->_NUM_PINES_INIT = pin;
+  if (pin > this->PinEnd()) {
+	return false;
+  }
   return true;
 }
-
-
 
 
 /*
@@ -169,55 +183,37 @@ bool PCF8574_MULTI::InitNumeroPin(int pin) {
 
 bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
   if (pin != 0) {
-    if ((pin < this->InitNumeroPin()) && (pin > this->NumeroPins())) {
-      return false;
-    }
+	if (this->PinIsValid(pin) == false) {
+	  return false;
+	}
   }
   
   if (pin == 0 ) {
-	//TODO: PENDIENTE CONTROLAR SOLO LOS CANALES QUE TENEMOS AJUSTADOS ENTRE LOS CANALES INICIO Y FIN.
+	
+	//TODO: PENDIENTE CONTROLAR SOLO LOS PINES QUE TENEMOS AJUSTADOS ENTRE LOS PINES INICIO Y FIN.
 	//TODO: PENDIENTE REVISAR NO LO HACE BIEN.
     for (int i = 1; i <= 8; i++){
 		int npinfor_end = 8 * i;
 		int npinfor_ini = npinfor_end - 7;
 		
-		/*
-		if ((npinfor_ini < this->InitNumeroPin()) || (npinfor_end > this->NumeroPins())) {
-			Serial.println("1.0.1.2 -----");
-		  continue;
-		}
-*/
-			
-			Serial.print("INI: ");
-			Serial.print(this->InitNumeroPin());
-			Serial.print(" - ");
-			Serial.println(npinfor_ini);
-			
-			Serial.print("END: ");
-			Serial.print(npinfor_end);
-			Serial.print(" - ");
-			Serial.println(this->NumeroPins());
-			
-			
-		
 		PCF8574 _PCF8574_Z_1(GetAddresByPin(8 * i), this->GetAddressWire());
-		if ((this->InitNumeroPin() == npinfor_ini) && (this->NumeroPins() == npinfor_end)) {
-		  Serial.println("1.1 -----");
+		if ((this->PinIni() == npinfor_ini) && (this->PinEnd() == npinfor_end)) {
 		  _PCF8574_Z_1.SetPinStatus(0, newstatus);
 		}
 		else {
 		  //RESETEAR SOLO LOS PINES SELECCIONADOS.
-		  Serial.println("1.2 -----");
-		  if (npinfor_ini < this->InitNumeroPin()) {
-		    _PCF8574_Z_1.SetIniPin(this->InitNumeroPin() - npinfor_ini);
+		  //Serial.print("INI: "); Serial.print(this->PinIni()); Serial.print(" - "); Serial.println(npinfor_ini);
+		  //Serial.print("END: "); Serial.print(npinfor_end); Serial.print(" - "); Serial.println(this->PinEnd());
+		  if (npinfor_ini < this->PinIni()) {
+		    _PCF8574_Z_1.SetIniPin(this->PinIni() - npinfor_ini);
 		  }
-		  if (npinfor_end > this->NumeroPins()) {
-		    _PCF8574_Z_1.SetEndPin(npinfor_end - this->NumeroPins());
+		  if (npinfor_end > this->PinEnd()) {
+		    _PCF8574_Z_1.SetEndPin(npinfor_end - this->PinEnd());
 		  }
 		  _PCF8574_Z_1.SetPinStatus(0, newstatus);	
 		}
-    } 
-    return true;
+    }
+	return true;
   }
   
   int AddressSelect = 0x0;
@@ -231,11 +227,13 @@ bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
 }
 
 
+
+
 /*
  * Method Name  : ReadPinStatus
  *
  * Synopsis     : bool PCF8574_MULTI::ReadPinStatus(int pin)  *
- * Arguments    : int  pin : Canal que deseamos leer.
+ * Arguments    : int  pin : Numero del pin que deseamos leer el estado.
  *
  * Description  : Lee el estado del pin que le solicitamos.
  * 
@@ -246,13 +244,9 @@ bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
  *   canales configurados retornara siempre false.
  */
 bool PCF8574_MULTI::ReadPinStatus(int pin) {
-  if (pin < this->InitNumeroPin()) {
+  if (this->PinIsValid(pin) == false) {
     return false;
   }
-  if (pin > this->NumeroPins()) {
-    return false;
-  }
-  
   int AddressSelect = 0x0;
   AddressSelect = this->GetAddresByPin(pin);
   if (AddressSelect < 0) {
@@ -261,6 +255,8 @@ bool PCF8574_MULTI::ReadPinStatus(int pin) {
   PCF8574 _PCF8574_Z(AddressSelect, this->GetAddressWire());
   return _PCF8574_Z.ReadPinStatus(pin);
 }
+
+
 
 
 /*
@@ -275,6 +271,8 @@ void PCF8574_MULTI::ResetPinStatus() {
 }
 
 
+
+
 /*
  * Method Name  : DebugStatusPin
  *
@@ -284,8 +282,8 @@ void PCF8574_MULTI::ResetPinStatus() {
  * 
  */
 void PCF8574_MULTI::DebugStatusPin(String &sreturn) {
-  for (int channel = this->InitNumeroPin(); channel <= this->NumeroPins(); channel++)
+  for (int ipin = this->PinIni(); ipin <= this->PinEnd(); ipin++)
   {
-    sreturn = sreturn + this->ReadPinStatus(channel);
+    sreturn = sreturn + this->ReadPinStatus(ipin);
   }
 }
