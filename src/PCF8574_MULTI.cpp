@@ -127,14 +127,9 @@ int PCF8574_MULTI::PinIni() {
   return this->_NUM_PINES_INI;
 }
 bool PCF8574_MULTI::PinIni(int pin) {
-  /*
   if ((pin < 0) || (pin > PCF8574_MAX_PIN)) {
 	return false;
   }
-  if (pin > this->PinEnd()) {
-    return false;
-  }
-  */
   Serial.print("2SETNEWPIN: "); Serial.println(pin);
   this->_NUM_PINES_INI = pin;
   return true;
@@ -143,11 +138,9 @@ int PCF8574_MULTI::PinEnd() {
   return this->_NUM_PINES_END;
 }
 bool PCF8574_MULTI::PinEnd(int pin) {
-  /*
   if ((pin < 0) || (pin > PCF8574_MAX_PIN)) {
 	return false;
   }
-  */
   Serial.print("1SETNEWPIN: "); Serial.println(pin);
   this->_NUM_PINES_END = pin;
   return true;
@@ -172,11 +165,11 @@ bool PCF8574_MULTI::PinIsValid(int pin) {
  * Method Name  : SetPinStatus
  *
  * Synopsis     : bool PCF8574_MULTI::SetPinStatus(int pin, bool newstatus)  *
- * Arguments    : int   pin : Pin del canal que deseamos definir.
- *                bool  newstatus : Nuevo estado del canal
+ * Arguments    : int   pin : Pin que deseamos definir.
+ *                bool  newstatus : Nuevo estado del PIN
  *
  * Description  : Seteamos el canal que le pasamos con el valor que le especificamos.
- *                Si usamos el canal 0 el nuevo valor se definira en todos los canales.
+ *                Si usamos el PIN 0 el nuevo valor se definira en todos los PINES configurados.
  * 
  * Returns      : bool 
  */
@@ -189,26 +182,34 @@ bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
   }
   
   if (pin == 0 ) {
-	
-	//TODO: PENDIENTE CONTROLAR SOLO LOS PINES QUE TENEMOS AJUSTADOS ENTRE LOS PINES INICIO Y FIN.
-	//TODO: PENDIENTE REVISAR NO LO HACE BIEN.
     for (int i = 1; i <= 8; i++){
 		int npinfor_end = 8 * i;
 		int npinfor_ini = npinfor_end - 7;
+		
+		if (this->PinIni() > npinfor_end) {
+			continue;
+		}
+		if (this->PinEnd() < npinfor_ini) {
+			continue;
+		}
 		
 		PCF8574 _PCF8574_Z_1(GetAddresByPin(8 * i), this->GetAddressWire());
 		if ((this->PinIni() == npinfor_ini) && (this->PinEnd() == npinfor_end)) {
 		  _PCF8574_Z_1.SetPinStatus(0, newstatus);
 		}
+		else if ((this->PinIni() <= npinfor_ini) && (this->PinEnd() >= npinfor_end)) {
+		  _PCF8574_Z_1.SetPinStatus(0, newstatus);
+		}
 		else {
 		  //RESETEAR SOLO LOS PINES SELECCIONADOS.
-		  //Serial.print("INI: "); Serial.print(this->PinIni()); Serial.print(" - "); Serial.println(npinfor_ini);
-		  //Serial.print("END: "); Serial.print(npinfor_end); Serial.print(" - "); Serial.println(this->PinEnd());
+		  //LA FORMULA QUE USAMOS ABAJO ES PARA PASAR EL NUMERO PIN A UN VALOR DE ENTRE 1 A 8.
 		  if (npinfor_ini < this->PinIni()) {
-		    _PCF8574_Z_1.SetIniPin(this->PinIni() - npinfor_ini);
+			int sPinIni = ((8 * (i-1)) - this->PinIni()) * -1;
+		    _PCF8574_Z_1.SetIniPin(sPinIni);
 		  }
 		  if (npinfor_end > this->PinEnd()) {
-		    _PCF8574_Z_1.SetEndPin(npinfor_end - this->PinEnd());
+			  int sPinEnd = ((8 * (i-1)) - this->PinEnd()) * -1;
+		    _PCF8574_Z_1.SetEndPin(sPinEnd);
 		  }
 		  _PCF8574_Z_1.SetPinStatus(0, newstatus);	
 		}
