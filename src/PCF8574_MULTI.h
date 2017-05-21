@@ -45,20 +45,41 @@
 #define PCF8574_MULTI_NUM_PIN_INI		1		//NUMERO DEL PIN INICIAL POR DEFECTO
 #define PCF8574_MULTI_NUM_PIN_END		8		//NUMERO DEL PIN FINAL POR DEFECTO
 
-#define PCF8574_MULTI_DEV_TYPE_PCF8574	0		//REF DEV PCF8574		ADDRESS 0100xxx
-#define PCF8574_MULTI_DEV_TYPE_PCF8574A	1		//REF DEV PCF8574A		ADDRESS 0111xxx
+#define PCF8574_MULTI_TDEV_PCF8574		0		//REF DEV PCF8574		ADDRESS 0100xxx
+#define PCF8574_MULTI_TDEV_PCF8574A		1		//REF DEV PCF8574A		ADDRESS 0111xxx
 #define PCF8574_MULTI_DIFF_FOR_A		0x18	//NUMERO DE DIRECCIONES DE DIFERENCIA ENTRA PCF8574 Y PCF8574A
 
 #include "PCF8574.h"
 
+struct InfoDatosPin {
+  int board;
+  int pinA;
+  int pinB;
+  int addressI2C;
+  bool err;
+};
+
 class PCF8574_MULTI
 {
   private:
-    int _NUM_PINES_INI = PCF8574_MULTI_NUM_PIN_INI;
-	int _NUM_PINES_END = PCF8574_MULTI_NUM_PIN_END;
-	int _ADDRES_WIRE = PCF8574_DIRECCION_WIRE;
-	byte _DEV_TYPE = PCF8574_MULTI_DEV_TYPE_PCF8574A;
+    int _NUM_PINES_INI;
+	int _NUM_PINES_END;
+	int _ADDRES_WIRE;
+	byte _DEV_TYPE;
 	
+	PCF8574 _PCF8574_DEV[7];
+	
+	bool _BEGIN_OK = false;
+	
+	int  PCF8574_MULTI::GetAddresByPin(int pin);
+	InfoDatosPin PCF8574_MULTI::GetInfoPin(int pin);
+	
+  public:
+    PCF8574_MULTI();
+	PCF8574_MULTI(byte typedev);
+    PCF8574_MULTI(byte typedev, int pinIni, int PinEnd);
+
+	void PCF8574_MULTI::begin();
 	
 	byte PCF8574_MULTI::GetTypeDev();
 	void PCF8574_MULTI::SetTypeDev(byte type);
@@ -66,15 +87,9 @@ class PCF8574_MULTI
 	int  PCF8574_MULTI::GetAddressWire();
 	void PCF8574_MULTI::SetAddressWire(int Address_Wire);
 	
-	int  PCF8574_MULTI::GetAddresByPin(int pin);
-
-  public:
-    PCF8574_MULTI();
-	PCF8574_MULTI(byte typedev);
-    PCF8574_MULTI(byte typedev, int pin);
-    PCF8574_MULTI(byte typedev, int pinIni, int PinEnd);
-	PCF8574_MULTI(byte typedev, int pinIni, int PinEnd, int Address_Wire);
-
+	void PCF8574_MULTI::pinMode(int pin, int mode);
+	int  PCF8574_MULTI::pinMode(int pin);
+	
 	bool PCF8574_MULTI::Pins(int pinini, int pinend);
 	bool PCF8574_MULTI::PinIsValid(int pin);
     int  PCF8574_MULTI::PinIni();
@@ -83,7 +98,7 @@ class PCF8574_MULTI
     bool PCF8574_MULTI::PinEnd(int pin);
 	
     bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus);
-    bool PCF8574_MULTI::ReadPinStatus(int pin);
+    int  PCF8574_MULTI::ReadPinStatus(int pin);
 
     void PCF8574_MULTI::ResetPinStatus();
     void PCF8574_MULTI::DebugStatusPin(String &sreturn);

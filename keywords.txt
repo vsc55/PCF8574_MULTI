@@ -1,10 +1,20 @@
 PCF8574_MULTI	KEYWORD1
 
-Pins	KEYWORD2
-PinIni	KEYWORD2
-PinEnd	KEYWORD2
+begin			KEYWORD2
 
-PinIsValid	KEYWORD2
+GetTypeDev		KEYWORD2
+SetTypeDev		KEYWORD2
+	
+GetAddressWire	KEYWORD2
+SetAddressWire	KEYWORD2
+
+pinMode			KEYWORD2
+
+Pins			KEYWORD2
+PinIsValid		KEYWORD2
+PinIni			KEYWORD2
+PinEnd			KEYWORD2
+
 SetPinStatus	KEYWORD2
 ReadPinStatus	KEYWORD2
 
