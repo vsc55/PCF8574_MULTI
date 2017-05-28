@@ -33,19 +33,18 @@
 
 PCF8574_MULTI::PCF8574_MULTI() {
   this->SetAddressWire(PCF8574_ADDRESS_I2C);
-  this->SetTypeDev(PCF8574_MULTI_TDEV_PCF8574);
-  this->Pins(PCF8574_MULTI_NUM_PIN_INI, PCF8574_MULTI_NUM_PIN_END);
-  
+  this->SetTypeDev(PCF8574_MULTI_TDEV_PCF8574); 
+  this->SetNumBoars(PCF8574_MULTI_NUM_BOARDS);
 }
 PCF8574_MULTI::PCF8574_MULTI(byte typedev) {
   this->SetTypeDev(typedev);
   this->SetAddressWire(PCF8574_ADDRESS_I2C);
-  this->Pins(PCF8574_MULTI_NUM_PIN_INI, PCF8574_MULTI_NUM_PIN_END);
+  this->SetNumBoars(PCF8574_MULTI_NUM_BOARDS);
 }
-PCF8574_MULTI::PCF8574_MULTI(byte typedev,int pinIni, int PinEnd) {
+PCF8574_MULTI::PCF8574_MULTI(byte typedev,int nBoards) {
   this->SetTypeDev(typedev);
-  this->Pins(pinIni, PinEnd);
   this->SetAddressWire(PCF8574_ADDRESS_I2C);
+  this->SetNumBoars(nBoards);
 }
 
 
@@ -55,12 +54,16 @@ void PCF8574_MULTI::begin()	{
   if (this->_BEGIN_OK == true ){ return; }
   
   for(int i=0; i < PCF8574_MULTI_MAX_BOARDS; i++)  {
+	//Serial.print("Init PCF8574 > "); Serial.print(i);
 	this->_PCF8574_DEV[i].SetAddressWire(this->GetAddressWire());
     this->_PCF8574_DEV[i].begin(this->GetAddresByPin(8*i));
 	//TODO: Añadir control de pin ini and pin end
+	//Serial.println(" > End!");
   }
   this->_BEGIN_OK = true;
+  //Serial.println("Begin OK!");
 }
+
 
 
 	
@@ -70,13 +73,13 @@ byte PCF8574_MULTI::GetTypeDev() {
 void PCF8574_MULTI::SetTypeDev(byte type) {
   this->_DEV_TYPE = type;
 }
-int PCF8574_MULTI::GetAddressWire() {
+int  PCF8574_MULTI::GetAddressWire() {
   return this->_ADDRES_WIRE;
 }
 void PCF8574_MULTI::SetAddressWire(int Address_Wire) {
   this->_ADDRES_WIRE = Address_Wire;
 }
-int PCF8574_MULTI::GetAddresByPin(int pin) {
+int  PCF8574_MULTI::GetAddresByPin(int pin) {
   if ((pin < 0) || (pin > PCF8574_MULTI_MAX_PIN)) {
     return -1;
   }
@@ -126,6 +129,19 @@ int PCF8574_MULTI::GetAddresByPin(int pin) {
 
 
 
+
+int  PCF8574_MULTI::GetNumBoars() {
+	return this->_NUM_BOARDS;
+}
+void PCF8574_MULTI::SetNumBoars(int nBoards) {
+	if (this->_BEGIN_OK == true ) { return; }
+	if (nBoards > PCF8574_MULTI_MAX_BOARDS) { return; }
+	this->_NUM_BOARDS = nBoards;
+}
+
+
+
+
 InfoDatosPin PCF8574_MULTI::GetInfoPin(int pin) {
   InfoDatosPin pininfo;
   
@@ -148,49 +164,37 @@ InfoDatosPin PCF8574_MULTI::GetInfoPin(int pin) {
   }
   return pininfo;
 }
-int PCF8574_MULTI::PinIni() {
-  return this->_NUM_PINES_INI;
-}
-bool PCF8574_MULTI::PinIni(int pin) {
-  if ((pin < 0) || (pin > PCF8574_MAX_PIN)) {
-	return false;
-  }
-  this->_NUM_PINES_INI = pin;
-  return true;
-}
-int PCF8574_MULTI::PinEnd() {
-  return this->_NUM_PINES_END;
-}
-bool PCF8574_MULTI::PinEnd(int pin) {
-  if ((pin < 0) || (pin > PCF8574_MAX_PIN)) {
-	return false;
-  }
-  this->_NUM_PINES_END = pin;
-  return true;
-}
-bool PCF8574_MULTI::Pins(int pinini, int pinend) {
-	this->PinIni(pinini);
-	this->PinEnd(pinend);
-	return true;
-}
 bool PCF8574_MULTI::PinIsValid(int pin) {
-  if (pin < this->PinIni()) {
+  if ((pin < 0) || (pin >PCF8574_MULTI_MAX_PIN)) {
     return false;
   }
-  if (pin > this->PinEnd()) {
-	return false;
+  if (pin > (this->GetNumBoars() * 8)) {
+    return false;
   }
   return true;
 }
+
+
+
 void PCF8574_MULTI::pinMode(int pin, int mode) {
   if (this->_BEGIN_OK == false ){ return; }
+  if (this->PinIsValid(pin) == false) { return; }
   
-  InfoDatosPin pininfo = this->GetInfoPin(pin);
-  if (pininfo.err == true) { return PIN_STATUS_ERR; }
-  this->_PCF8574_DEV[pininfo.board].pinMode(pininfo.pinB, mode);
+  if (pin == 0)
+  {
+    for (int i = 1; i <= this->GetNumBoars(); i++){
+      this->_PCF8574_DEV[i].pinMode(0, mode);
+    }
+  }
+  else {
+	InfoDatosPin pininfo = this->GetInfoPin(pin);
+    if (pininfo.err == true) { return PIN_STATUS_ERR; }
+    this->_PCF8574_DEV[pininfo.board].pinMode(pininfo.pinB, mode);
+  }
 }
 int PCF8574_MULTI::pinMode(int pin) {
   if (this->_BEGIN_OK == false ){ return -1; }
+  if (this->PinIsValid(pin) == false) { return -2; }
   
   InfoDatosPin pininfo = this->GetInfoPin(pin);
   if (pininfo.err == true) { return -2; }
@@ -205,104 +209,61 @@ int PCF8574_MULTI::pinMode(int pin) {
 /*
  * Method Name  : SetPinStatus
  *
- * Synopsis     : bool PCF8574_MULTI::SetPinStatus(int pin, bool newstatus)  *
- * Arguments    : int   pin : Pin que deseamos definir.
- *                bool  newstatus : Nuevo estado del PIN
+ * Synopsis     : bool PCF8574_MULTI::SetPinStatus(int pin, bool newstatus)
+ * Arguments    : int   pin : Numero de pin que deseamos cambiar su estado.
+ *                bool  newstatus : Nuevo estado del pin.
  *
- * Description  : Seteamos el canal que le pasamos con el valor que le especificamos.
- *                Si usamos el PIN 0 el nuevo valor se definira en todos los PINES configurados.
+ * Description  : Reconfiguramos el pin que le pasamos con el valor que le especificamos.
+ *                Si usamos el PIN 0, el nuevo valor se configurará en todos los PINES.
  * 
  * Returns      : bool 
  */
-
 bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
   if (this->_BEGIN_OK == false ) { return false; }
-  
-  if (pin != 0) {
-	if (this->PinIsValid(pin) == false) {
-	  return false;
-	}
-  }
+  if (this->PinIsValid(pin) == false) { return false; }
   
   if (pin == 0 ) {
-    for (int i = 1; i <= PCF8574_MULTI_MAX_BOARDS; i++){
-		int npinfor_end = 8 * i;
-		int npinfor_ini = npinfor_end - 7;
-		
-		if (this->PinIni() > npinfor_end) {
-			continue;
-		}
-		if (this->PinEnd() < npinfor_ini) {
-			continue;
-		}
-		if ((this->PinIni() == npinfor_ini) && (this->PinEnd() == npinfor_end)) {
-		  return this->_PCF8574_DEV[i].SetPinStatus(0, newstatus);
-		}
-		else if ((this->PinIni() <= npinfor_ini) && (this->PinEnd() >= npinfor_end)) {
-		  return this->_PCF8574_DEV[i].SetPinStatus(0, newstatus);
-		}
-		else {
-		  //RESETEAR SOLO LOS PINES SELECCIONADOS.
-		  //LA FORMULA QUE USAMOS ABAJO ES PARA PASAR EL NUMERO PIN A UN VALOR DE ENTRE 1 A 8.
-		  //TODO: PENDTENTE REAJUSTAR PARA QUE LOS PIN INI Y END DE LAS BOARS DE AJUSTEN EN BEGIN.
-		  if (npinfor_ini < this->PinIni()) {
-			int sPinIni = ((8 * (i-1)) - this->PinIni()) * -1;
-		    this->_PCF8574_DEV[i].SetIniPin(sPinIni);
-		  }
-		  if (npinfor_end > this->PinEnd()) {
-			  int sPinEnd = ((8 * (i-1)) - this->PinEnd()) * -1;
-		    this->_PCF8574_DEV[i].SetEndPin(sPinEnd);
-		  }
-		  
-		  return this->_PCF8574_DEV[i].SetPinStatus(0, newstatus);
-		}
+    for (int i = 1; i <= this->GetNumBoars(); i++){
+      this->_PCF8574_DEV[i].SetPinStatus(0, newstatus);
     }
 	return true;
   }
   
   InfoDatosPin pininfo = this->GetInfoPin(pin);
   if (pininfo.err == true) { return PIN_STATUS_ERR; } 
-  
   return this->_PCF8574_DEV[pininfo.board].SetPinStatus(pininfo.pinB, newstatus);
 }
-
-
 
 
 /*
  * Method Name  : ReadPinStatus
  *
- * Synopsis     : bool PCF8574_MULTI::ReadPinStatus(int pin)  *
- * Arguments    : int  pin : Numero del pin que deseamos leer el estado.
+ * Synopsis     : bool PCF8574_MULTI::ReadPinStatus(int pin)
+ * Arguments    : int  pin : Número del pin que deseamos leer el estado.
  *
- * Description  : Lee el estado del pin que le solicitamos.
+ * Description  : Lee el estado del pin que le solicitamos da igual el modo en el que este configurado, siempre se puede leer el estado de cualquier pin.
  * 
  * Returns      : bool 
  *
  * NOTA:
- *   Tener en cuenta que si el valor de pin es superior o inferior a los
- *   canales configurados retornara siempre false.
+ *   Tener en cuenta que si el valor de pin es superior o inferior a los pones configurados retornara siempre false.
  */
 int PCF8574_MULTI::ReadPinStatus(int pin) {
-  if (this->PinIsValid(pin) == false) {
-    return PIN_STATUS_ERR;
-  }
   if (this->_BEGIN_OK == false ) { return PIN_STATUS_ERR; }
+  if (pin == 0) { return PIN_STATUS_ERR; }
+  if (this->PinIsValid(pin) == false) { return PIN_STATUS_ERR; }
   
   InfoDatosPin pininfo = this->GetInfoPin(pin);
   if (pininfo.err == true) { return PIN_STATUS_ERR; } 
-  
   return this->_PCF8574_DEV[pininfo.board].ReadPinStatus(pininfo.pinB);
 }
-
-
 
 
 /*
  * Method Name  : ResetPinStatus
  *
- * Synopsis     : void PCF8574_MULTI::ResetPinStatus()  *
- * Description  : Resetea todos los canales y los pone en false.
+ * Synopsis     : void PCF8574_MULTI::ResetPinStatus()
+ * Description  : Pone todos los pines que están en modo OUTPUT en false.
  * 
  */
 void PCF8574_MULTI::ResetPinStatus() {
@@ -310,19 +271,18 @@ void PCF8574_MULTI::ResetPinStatus() {
 }
 
 
-
-
 /*
  * Method Name  : DebugStatusPin
  *
- * Synopsis     : void PCF8574_MULTI::DebugStatusPin(String &sreturn)  *
- * Description  : Obtenemos el estado de los canales todos en un string en
- *                en formato binario.
+ * Synopsis     : void PCF8574_MULTI::DebugStatusPin(String &sreturn)
+ * Description  : Obtenemos el estado de todos los pines en un String en formato binario.
  * 
  */
 void PCF8574_MULTI::DebugStatusPin(String &sreturn) {
-  for (int ipin = this->PinIni(); ipin <= this->PinEnd(); ipin++)
-  {
-    sreturn = sreturn + this->ReadPinStatus(ipin);
+  if (this->_BEGIN_OK == true ) {
+    for (int ipin = 1; (this->GetNumBoars() *8); ipin++)
+    {
+      sreturn = sreturn + this->ReadPinStatus(ipin);
+    }
   }
 }

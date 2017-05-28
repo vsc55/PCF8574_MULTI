@@ -40,10 +40,8 @@
 #define PCF8574_MULTI_PCF8574A_ADDRES_8_I2C 0x3F
 
 #define PCF8574_MULTI_MAX_BOARDS 		8		//NUMERO MAXIMO DE BOARDS QUE SE PUEDEN CONTROLAR TANTO PCF8574 y PCF8574A.
-#define PCF8574_MULTI_MAX_PIN			64		//NUMERO MAXIMO DE CANALES SOPORTADOS
+#define PCF8574_MULTI_MAX_PIN			64		//NUMERO MAXIMO DE PIN's SOPORTADOS
 #define PCF8574_MULTI_NUM_BOARDS		1		//NUMERO DE BOARDS CONTROLADAS
-#define PCF8574_MULTI_NUM_PIN_INI		1		//NUMERO DEL PIN INICIAL POR DEFECTO
-#define PCF8574_MULTI_NUM_PIN_END		8		//NUMERO DEL PIN FINAL POR DEFECTO
 
 #define PCF8574_MULTI_TDEV_PCF8574		0		//REF DEV PCF8574		ADDRESS 0100xxx
 #define PCF8574_MULTI_TDEV_PCF8574A		1		//REF DEV PCF8574A		ADDRESS 0111xxx
@@ -62,8 +60,7 @@ struct InfoDatosPin {
 class PCF8574_MULTI
 {
   private:
-    int _NUM_PINES_INI;
-	int _NUM_PINES_END;
+    int _NUM_BOARDS;
 	int _ADDRES_WIRE;
 	byte _DEV_TYPE;
 	
@@ -77,7 +74,7 @@ class PCF8574_MULTI
   public:
     PCF8574_MULTI();
 	PCF8574_MULTI(byte typedev);
-    PCF8574_MULTI(byte typedev, int pinIni, int PinEnd);
+    PCF8574_MULTI(byte typedev, int nBoards);
 
 	void PCF8574_MULTI::begin();
 	
@@ -90,12 +87,10 @@ class PCF8574_MULTI
 	void PCF8574_MULTI::pinMode(int pin, int mode);
 	int  PCF8574_MULTI::pinMode(int pin);
 	
-	bool PCF8574_MULTI::Pins(int pinini, int pinend);
 	bool PCF8574_MULTI::PinIsValid(int pin);
-    int  PCF8574_MULTI::PinIni();
-    bool PCF8574_MULTI::PinIni(int pin);
-	int  PCF8574_MULTI::PinEnd();
-    bool PCF8574_MULTI::PinEnd(int pin);
+	
+	int  PCF8574_MULTI::GetNumBoars();
+    void PCF8574_MULTI::SetNumBoars(int nBoards);
 	
     bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus);
     int  PCF8574_MULTI::ReadPinStatus(int pin);

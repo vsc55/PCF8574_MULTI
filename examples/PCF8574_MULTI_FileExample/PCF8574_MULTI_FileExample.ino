@@ -22,15 +22,15 @@
 
 /*
    Creamos el objeto.
-   Por defecto se configura para controlar el modelo PCF8574A, de los pines 1 al 8 y el bus I2C en modo master.
-   Podemos configura el objeto para que use los pines que nosotros queramos y la dirección I2C que nos necesitemos.
+   Por defecto se configura para controlar 1 placa del modelo PCF8574A y el bus I2C en modo master.
+   Podemos configura el objeto para que use hasta un máximo de 8 placas del mismo tipo.
 
    Ejemplos:
-      Objeto por defecto I2C modo Master, pines del 1 al 8 y el modelo PCF8574A.
-      PCF8574_MULTI PCF8574_MULTI_A();
+      Objeto por defecto I2C modo Master, 1 placa y el modelo PCF8574A.
+      PCF8574_MULTI PCF8574_MULTI_A;
 
-      Objeto que le especificamos el modelo PCF8574A, que use los pines del 5 al 11 y el bus I2C en modo Master.
-      PCF8574_MULTI PCF8574_MULTI_A(5, 11);
+      Objeto que le especificamos el modelo PCF8574A, y que vamos a controlar 2 placas además el bus I2C en modo Master.
+      PCF8574_MULTI PCF8574_MULTI_A(PCF8574_MULTI_TDEV_PCF8574A, 2);
 
       NOTA I2C: Si se ha ejecutado “Wire.Begin” antes no hará caso al valor que le hemos configurado.
 */
@@ -48,55 +48,43 @@ void setup() {
 
 
   /*
-     Configuramos para usar los pines del 1 al 8.
+    Configuramos en 3 el número de placas que vamos a controlar.
+    NOTA: Una vez iniciado el objeto con la función Begin, no se podrá modificar.
   */
-  PCF8574_MULTI_A.Pins(1, 8);
-  Serial.println("Pins... End!");
+  PCF8574_MULTI_A.SetNumBoars(3);
+
 
   /*
      Iniciamos el objeto.
      NOTA: Si vamos a usar el bus I2C en modo esclavo tendremos que configura la dirección Wire antes de ejecutar Begin().
      NOTA: Si se ha ejecutado antes en algún sitio Wire.Begin(), se usarán los datos que se hayan ejecutando antes, y la dirección Wire que tengamos configurado en el objeto no tendrá efecto.
+     NOTA: Una vez ejecutado Begin ya no se podrá modificar el número de Placas.
   */
   PCF8574_MULTI_A.begin();
   Serial.println("Begin... End!");
+}
+
+void loop() {
 
 
   /*
      Configuramos el tipo de pin si es IN o OUT.
      NOTE: Todos los pines por defecto están configurados en modo IN.
+     NOTA: El pin número 0 se usa para configura todos los pines a la vez.
   */
-  PCF8574_MULTI_A.pinMode(1, OUTPUT);
-  PCF8574_MULTI_A.pinMode(2, OUTPUT);
-  PCF8574_MULTI_A.pinMode(3, OUTPUT);
-  PCF8574_MULTI_A.pinMode(4, OUTPUT);
-  PCF8574_MULTI_A.pinMode(5, OUTPUT);
-  PCF8574_MULTI_A.pinMode(6, OUTPUT);
+  PCF8574_MULTI_A.pinMode(0, OUTPUT);
+  PCF8574_MULTI_A.pinMode(5, INPUT);
+  PCF8574_MULTI_A.pinMode(6, INPUT);
   Serial.println("PinMode... End!");
 
 
   /*
-     Configuramos el objeto para que use hasta el pin 14.
-  */
-  PCF8574_MULTI_A.PinEnd(14);
-  Serial.println("Pin14... End!");
-  
-
-
-  /*
-    Ahora configuramos el objeto parar que comienza desde el pin número 5.
-    El objeto se quedaría configurado para que se usen los pines del 5 al 14.
-  */
-  PCF8574_MULTI_A.PinIni(5);
-  Serial.println("Pin5... End!");
-
-
-  /*
-     Reseteamos todos los canales que están configuradas y los ponemos en false.
+     Reseteamos todos los pines que están configuradas en modo OUPUT y los ponemos en false.
   */
   PCF8574_MULTI_A.ResetPinStatus();
   Serial.println("ResetPinStatus... End!");
   delay(1000);
+
 
   /*
      Ponemos todos los pines en modo true. Solo afectara al rango que tengamos
@@ -133,17 +121,10 @@ void setup() {
   Serial.print("PIN7:"); Serial.println(ValPIN7);
   delay(1000);
 
-  /*
-    Podremos cambien los pines que controlamos en cualquier momento, para modificar
-    a la vez el pin inicial y el final podremos usar la siguiente función.
-    Ahora configuramos el objeto para que controle de los pines 4 al 12.
-  */
-  PCF8574_MULTI_A.Pins(4, 12);
-  Serial.println("PINS 4,12!");
-  delay(1000);
-}
 
-void loop() {
+
+
+  
   /*
      Leemos el estado de todos los pines configurados y los enviamos al puerto serie
      en modo binario. 0 false, 1 true.
