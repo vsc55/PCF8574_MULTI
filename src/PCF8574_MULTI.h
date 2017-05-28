@@ -47,6 +47,8 @@
 #define PCF8574_MULTI_TDEV_PCF8574A		1		//REF DEV PCF8574A		ADDRESS 0111xxx
 #define PCF8574_MULTI_DIFF_FOR_A		0x18	//NUMERO DE DIRECCIONES DE DIFERENCIA ENTRA PCF8574 Y PCF8574A
 
+#include <Arduino.h>
+#include <Wire.h>
 #include "PCF8574.h"
 
 struct InfoDatosPin {
@@ -88,6 +90,7 @@ class PCF8574_MULTI
 	int  PCF8574_MULTI::pinMode(int pin);
 	
 	bool PCF8574_MULTI::PinIsValid(int pin);
+	int  PCF8574_MULTI::NumPinsAll();
 	
 	int  PCF8574_MULTI::GetNumBoars();
     void PCF8574_MULTI::SetNumBoars(int nBoards);

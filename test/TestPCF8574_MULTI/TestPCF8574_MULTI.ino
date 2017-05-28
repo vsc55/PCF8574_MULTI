@@ -37,24 +37,45 @@ void loop() {
   Serial.println("TODO OFF");
   PCF8574_MULTI_A.SetPinStatus(0, PIN_STATUS_OFF);
   delay(2000);
-
-/*
-  String vreturn;
-  PCF8574_MULTI_A.DebugStatusPin(vreturn);
-  Serial.println(vreturn);
-  delay(2000);
-  */
-  Serial.println("-----------------------");
+  Serial.println("-----------------------|");
 
 
+  Serial.print("Num Boards:");
+  Serial.println(PCF8574_MULTI_A.GetNumBoars());
+  delay(500);
 
-  for (int ii = 1; ii <= 8; ii++) {
-    Serial.print("PIN "); Serial.print(ii); Serial.print(" > ON >");
+
+  int numPinAll = PCF8574_MULTI_A.NumPinsAll();
+  Serial.print("Num Pin All:");
+  Serial.println(numPinAll);
+  Serial.println("-----------------------|");
+  delay(500);
+
+
+  String sStatus = "";
+  for (int ii = 1; ii <= numPinAll; ii++) {
+    Serial.print("PIN "); Serial.println(ii);
+    
+    Serial.println("    > ON");
     PCF8574_MULTI_A.SetPinStatus(ii, PIN_STATUS_ON);
     delay(500);
-    Serial.println("OFF");
+
+    //PCF8574_MULTI_A.DebugStatusPin(vreturn);
+    //Serial.print("DATOS ON:"); Serial.println(vreturn);
+    //sStatus = "";
+
+    delay(500);
+    Serial.println("    > OFF");
     PCF8574_MULTI_A.SetPinStatus(ii, PIN_STATUS_OFF);
+    delay(500);
+ 
+    //PCF8574_MULTI_A.DebugStatusPin(vreturn);
+    //Serial.print("DATOS OFF:"); Serial.println(vreturn);
+    //sStatus = "";
+
+    Serial.println("-----------------------|");
     delay(1000);
   }
   
+  delay(1000);
 }

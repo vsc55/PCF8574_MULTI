@@ -138,7 +138,9 @@ void PCF8574_MULTI::SetNumBoars(int nBoards) {
 	if (nBoards > PCF8574_MULTI_MAX_BOARDS) { return; }
 	this->_NUM_BOARDS = nBoards;
 }
-
+int  PCF8574_MULTI::NumPinsAll(){
+	return this->GetNumBoars() * 8;
+}
 
 
 
@@ -168,7 +170,7 @@ bool PCF8574_MULTI::PinIsValid(int pin) {
   if ((pin < 0) || (pin >PCF8574_MULTI_MAX_PIN)) {
     return false;
   }
-  if (pin > (this->GetNumBoars() * 8)) {
+  if (pin > this->NumPinsAll()) {
     return false;
   }
   return true;
@@ -271,18 +273,14 @@ void PCF8574_MULTI::ResetPinStatus() {
 }
 
 
-/*
- * Method Name  : DebugStatusPin
- *
- * Synopsis     : void PCF8574_MULTI::DebugStatusPin(String &sreturn)
- * Description  : Obtenemos el estado de todos los pines en un String en formato binario.
- * 
- */
-void PCF8574_MULTI::DebugStatusPin(String &sreturn) {
+
+
+//TODO: PENDIENTE REVISAR
+void PCF8574_MULTI::DebugStatusPin(String &sreturnpin) {
   if (this->_BEGIN_OK == true ) {
-    for (int ipin = 1; (this->GetNumBoars() *8); ipin++)
+    for (int ipin = 1; this->NumPinsAll(); ipin++)
     {
-      sreturn = sreturn + this->ReadPinStatus(ipin);
+      sreturnpin = sreturnpin + this->ReadPinStatus(ipin);
     }
   }
 }
