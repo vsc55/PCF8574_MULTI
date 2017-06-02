@@ -90,7 +90,7 @@ void loop() {
      Ponemos todos los pines en modo true. Solo afectara al rango que tengamos
      configurado en este caso del 5 al 14.
   */
-  PCF8574_MULTI_A.SetPinStatus(0, PIN_STATUS_ON);
+  PCF8574_MULTI_A.digitalWrite(0, PIN_STATUS_ON);
   Serial.println("Todo ON!");
   delay(1000);
 
@@ -100,9 +100,9 @@ void loop() {
      pero no hace efecto ya que esta fuera del intervalo de pines que tenemos
      configurados.
   */
-  PCF8574_MULTI_A.SetPinStatus(5, PIN_STATUS_OFF);
-  PCF8574_MULTI_A.SetPinStatus(11, PIN_STATUS_OFF);
-  PCF8574_MULTI_A.SetPinStatus(2, PIN_STATUS_OFF);
+  PCF8574_MULTI_A.digitalWrite(5, PIN_STATUS_OFF);
+  PCF8574_MULTI_A.digitalWrite(11, PIN_STATUS_OFF);
+  PCF8574_MULTI_A.digitalWrite(2, PIN_STATUS_OFF);
   Serial.println("OFF 5, 11, 2!");
   delay(1000);
 

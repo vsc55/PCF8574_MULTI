@@ -209,9 +209,9 @@ int PCF8574_MULTI::pinMode(int pin) {
 
 
 /*
- * Method Name  : SetPinStatus
+ * Method Name  : digitalWrite
  *
- * Synopsis     : bool PCF8574_MULTI::SetPinStatus(int pin, bool newstatus)
+ * Synopsis     : bool PCF8574_MULTI::digitalWrite(int pin, bool newstatus)
  * Arguments    : int   pin : Numero de pin que deseamos cambiar su estado.
  *                bool  newstatus : Nuevo estado del pin.
  *
@@ -220,20 +220,20 @@ int PCF8574_MULTI::pinMode(int pin) {
  * 
  * Returns      : bool 
  */
-bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
+bool PCF8574_MULTI::digitalWrite(int pin, byte newstatus) {
   if (this->_BEGIN_OK == false ) { return false; }
   if (this->PinIsValid(pin) == false) { return false; }
   
   if (pin == 0 ) {
     for (int i = 1; i <= this->GetNumBoars(); i++){
-      this->_PCF8574_DEV[i].SetPinStatus(0, newstatus);
+      this->_PCF8574_DEV[i].digitalWrite(0, newstatus);
     }
 	return true;
   }
   
   InfoDatosPin pininfo = this->GetInfoPin(pin);
   if (pininfo.err == true) { return PIN_STATUS_ERR; } 
-  return this->_PCF8574_DEV[pininfo.board].SetPinStatus(pininfo.pinB, newstatus);
+  return this->_PCF8574_DEV[pininfo.board].digitalWrite(pininfo.pinB, newstatus);
 }
 
 
@@ -269,7 +269,7 @@ int PCF8574_MULTI::digitalRead(int pin) {
  * 
  */
 void PCF8574_MULTI::ResetPinStatus() {
-  this->SetPinStatus(0, false);
+  this->digitalWrite(0, false);
 }
 
 

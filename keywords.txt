@@ -9,16 +9,15 @@ GetAddressWire	KEYWORD2
 SetAddressWire	KEYWORD2
 
 pinMode		KEYWORD2
+digitalWrite	KEYWORD2
+digitalRead	KEYWORD2
+
 
 PinIsValid	KEYWORD2
 NumPinsAll	KEYWORD2
 
 GetNumBoars	KEYWORD2
 SetNumBoars	KEYWORD2
-
-
-SetPinStatus	KEYWORD2
-digitalRead	KEYWORD2
 
 ResetPinStatus	KEYWORD2
 DebugStatusPin	KEYWORD2
