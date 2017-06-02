@@ -18,7 +18,7 @@ SetNumBoars	KEYWORD2
 
 
 SetPinStatus	KEYWORD2
-ReadPinStatus	KEYWORD2
+digitalRead	KEYWORD2
 
 ResetPinStatus	KEYWORD2
 DebugStatusPin	KEYWORD2

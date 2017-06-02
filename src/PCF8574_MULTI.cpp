@@ -238,9 +238,9 @@ bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
 
 
 /*
- * Method Name  : ReadPinStatus
+ * Method Name  : digitalRead
  *
- * Synopsis     : bool PCF8574_MULTI::ReadPinStatus(int pin)
+ * Synopsis     : bool PCF8574_MULTI::digitalRead(int pin)
  * Arguments    : int  pin : Número del pin que deseamos leer el estado.
  *
  * Description  : Lee el estado del pin que le solicitamos da igual el modo en el que este configurado, siempre se puede leer el estado de cualquier pin.
@@ -250,14 +250,14 @@ bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus) {
  * NOTA:
  *   Tener en cuenta que si el valor de pin es superior o inferior a los pones configurados retornara siempre false.
  */
-int PCF8574_MULTI::ReadPinStatus(int pin) {
+int PCF8574_MULTI::digitalRead(int pin) {
   if (this->_BEGIN_OK == false ) { return PIN_STATUS_ERR; }
   if (pin == 0) { return PIN_STATUS_ERR; }
   if (this->PinIsValid(pin) == false) { return PIN_STATUS_ERR; }
   
   InfoDatosPin pininfo = this->GetInfoPin(pin);
   if (pininfo.err == true) { return PIN_STATUS_ERR; } 
-  return this->_PCF8574_DEV[pininfo.board].ReadPinStatus(pininfo.pinB);
+  return this->_PCF8574_DEV[pininfo.board].digitalRead(pininfo.pinB);
 }
 
 
@@ -280,7 +280,7 @@ void PCF8574_MULTI::DebugStatusPin(String &sreturnpin) {
   if (this->_BEGIN_OK == true ) {
     for (int ipin = 1; this->NumPinsAll(); ipin++)
     {
-      sreturnpin = sreturnpin + this->ReadPinStatus(ipin);
+      sreturnpin = sreturnpin + this->digitalRead(ipin);
     }
   }
 }

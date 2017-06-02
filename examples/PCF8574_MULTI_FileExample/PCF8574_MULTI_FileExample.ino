@@ -112,9 +112,9 @@ void loop() {
      También leeremos el pin 2. Esta opción sí que está disponible siempre. Podremos
      leer el estado de cualquier pin, pero no podremos modificar su estado.
   */
-  int ValPIN2 = PCF8574_MULTI_A.ReadPinStatus(2);
-  int ValPIN5 = PCF8574_MULTI_A.ReadPinStatus(5);
-  int ValPIN7 = PCF8574_MULTI_A.ReadPinStatus(7);
+  int ValPIN2 = PCF8574_MULTI_A.digitalRead(2);
+  int ValPIN5 = PCF8574_MULTI_A.digitalRead(5);
+  int ValPIN7 = PCF8574_MULTI_A.digitalRead(7);
   Serial.println("READ STATUS:");
   Serial.print("PIN2:"); Serial.println(ValPIN2);
   Serial.print("PIN5:"); Serial.println(ValPIN5);

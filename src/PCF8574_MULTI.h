@@ -96,7 +96,7 @@ class PCF8574_MULTI
     void PCF8574_MULTI::SetNumBoars(int nBoards);
 	
     bool PCF8574_MULTI::SetPinStatus(int pin, byte newstatus);
-    int  PCF8574_MULTI::ReadPinStatus(int pin);
+    int  PCF8574_MULTI::digitalRead(int pin);
 
     void PCF8574_MULTI::ResetPinStatus();
     void PCF8574_MULTI::DebugStatusPin(String &sreturn);
