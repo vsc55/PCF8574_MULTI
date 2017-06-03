@@ -44,14 +44,14 @@ void setup() {
   /*
      Configuramos el tipo de chip que vamos a usar para obtener las direcciones I2C correctas.
   */
-  PCF8574_MULTI_A.SetTypeDev(PCF8574_MULTI_TDEV_PCF8574A);
+  PCF8574_MULTI_A.TypeDev(PCF8574_MULTI_TDEV_PCF8574A);
 
 
   /*
     Configuramos en 3 el número de placas que vamos a controlar.
     NOTA: Una vez iniciado el objeto con la función Begin, no se podrá modificar.
   */
-  PCF8574_MULTI_A.SetNumBoars(3);
+  PCF8574_MULTI_A.NumBoars(3);
 
 
   /*
@@ -112,9 +112,9 @@ void loop() {
      También leeremos el pin 2. Esta opción sí que está disponible siempre. Podremos
      leer el estado de cualquier pin, pero no podremos modificar su estado.
   */
-  int ValPIN2 = PCF8574_MULTI_A.digitalRead(2);
-  int ValPIN5 = PCF8574_MULTI_A.digitalRead(5);
-  int ValPIN7 = PCF8574_MULTI_A.digitalRead(7);
+  byte ValPIN2 = PCF8574_MULTI_A.digitalRead(2);
+  byte ValPIN5 = PCF8574_MULTI_A.digitalRead(5);
+  byte ValPIN7 = PCF8574_MULTI_A.digitalRead(7);
   Serial.println("READ STATUS:");
   Serial.print("PIN2:"); Serial.println(ValPIN2);
   Serial.print("PIN5:"); Serial.println(ValPIN5);

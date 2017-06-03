@@ -1,23 +1,15 @@
 PCF8574_MULTI	KEYWORD1
 
-begin			KEYWORD2
-
-GetTypeDev		KEYWORD2
-SetTypeDev		KEYWORD2
-	
-GetAddressWire	KEYWORD2
-SetAddressWire	KEYWORD2
-
+begin		KEYWORD2
 pinMode		KEYWORD2
 digitalWrite	KEYWORD2
 digitalRead	KEYWORD2
-
+TypeDev		KEYWORD2
+AddressWire	KEYWORD2
+NumBoars	KEYWORD2
 
 PinIsValid	KEYWORD2
 NumPinsAll	KEYWORD2
-
-GetNumBoars	KEYWORD2
-SetNumBoars	KEYWORD2
 
 ResetPinStatus	KEYWORD2
 DebugStatusPin	KEYWORD2

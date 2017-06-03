@@ -52,54 +52,54 @@
 #include "PCF8574.h"
 
 struct InfoDatosPin {
-  int board;
-  int pinA;
-  int pinB;
-  int addressI2C;
-  bool err;
+  uint8_t 	board;
+  uint8_t 	pinA;
+  uint8_t 	pinB;
+  int 		addressI2C;
+  bool 		err;
 };
 
 class PCF8574_MULTI
 {
   private:
-    int _NUM_BOARDS;
-	int _ADDRES_WIRE;
-	byte _DEV_TYPE;
+	uint8_t _DEV_TYPE;
+    uint8_t _NUM_BOARDS;
+	int 	_ADDRES_WIRE;
 	
 	PCF8574 _PCF8574_DEV[7];
 	
 	bool _BEGIN_OK = false;
 	
-	int  PCF8574_MULTI::GetAddresByPin(int pin);
-	InfoDatosPin PCF8574_MULTI::GetInfoPin(int pin);
+	int  PCF8574_MULTI::GetAddresByPin(byte pin);
+	InfoDatosPin PCF8574_MULTI::GetInfoPin(byte pin);
 	
   public:
     PCF8574_MULTI();
 	PCF8574_MULTI(byte typedev);
-    PCF8574_MULTI(byte typedev, int nBoards);
+    PCF8574_MULTI(byte typedev, byte nBoards);
 
-	void PCF8574_MULTI::begin();
+	void 	PCF8574_MULTI::begin();
 	
-	byte PCF8574_MULTI::GetTypeDev();
-	void PCF8574_MULTI::SetTypeDev(byte type);
+	uint8_t PCF8574_MULTI::TypeDev();
+	void 	PCF8574_MULTI::TypeDev(byte type);
 	
-	int  PCF8574_MULTI::GetAddressWire();
-	void PCF8574_MULTI::SetAddressWire(int Address_Wire);
+	int  	PCF8574_MULTI::AddressWire();
+	void 	PCF8574_MULTI::AddressWire(int Address_Wire);
 	
-	void PCF8574_MULTI::pinMode(int pin, int mode);
-	int  PCF8574_MULTI::pinMode(int pin);
+	void 	PCF8574_MULTI::pinMode(byte pin, byte mode);
+	uint8_t PCF8574_MULTI::pinMode(byte pin);
 	
-	bool PCF8574_MULTI::PinIsValid(int pin);
-	int  PCF8574_MULTI::NumPinsAll();
+	bool 	PCF8574_MULTI::PinIsValid(byte pin);
+	uint8_t PCF8574_MULTI::NumPinsAll();
 	
-	int  PCF8574_MULTI::GetNumBoars();
-    void PCF8574_MULTI::SetNumBoars(int nBoards);
+	uint8_t PCF8574_MULTI::NumBoars();
+    void 	PCF8574_MULTI::NumBoars(byte nBoards);
 	
-    bool PCF8574_MULTI::digitalWrite(int pin, byte newstatus);
-    int  PCF8574_MULTI::digitalRead(int pin);
+    bool 	PCF8574_MULTI::digitalWrite(byte pin, byte newstatus);
+    uint8_t PCF8574_MULTI::digitalRead(byte pin);
 
-    void PCF8574_MULTI::ResetPinStatus();
-    void PCF8574_MULTI::DebugStatusPin(String &sreturn);
+    void 	PCF8574_MULTI::ResetPinStatus();
+    void 	PCF8574_MULTI::DebugStatusPin(String &sreturn);
 };
 
 #endif

@@ -5,8 +5,8 @@ PCF8574_MULTI PCF8574_MULTI_A;
 void setup() {
   Serial.begin(9600);
 
-  PCF8574_MULTI_A.SetTypeDev(PCF8574_MULTI_TDEV_PCF8574A);
-  PCF8574_MULTI_A.SetNumBoars(1);
+  PCF8574_MULTI_A.TypeDev(PCF8574_MULTI_TDEV_PCF8574A);
+  PCF8574_MULTI_A.NumBoars(1);
   PCF8574_MULTI_A.begin();
 }
 
@@ -41,11 +41,11 @@ void loop() {
 
 
   Serial.print("Num Boards:");
-  Serial.println(PCF8574_MULTI_A.GetNumBoars());
+  Serial.println(PCF8574_MULTI_A.NumBoars());
   delay(500);
 
 
-  int numPinAll = PCF8574_MULTI_A.NumPinsAll();
+  byte numPinAll = PCF8574_MULTI_A.NumPinsAll();
   Serial.print("Num Pin All:");
   Serial.println(numPinAll);
   Serial.println("-----------------------|");
@@ -53,7 +53,7 @@ void loop() {
 
 
   String sStatus = "";
-  for (int ii = 1; ii <= numPinAll; ii++) {
+  for (byte ii = 1; ii <= numPinAll; ii++) {
     Serial.print("PIN "); Serial.println(ii);
     
     Serial.println("    > ON");
