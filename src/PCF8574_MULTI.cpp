@@ -32,39 +32,59 @@
  */
 
 PCF8574_MULTI::PCF8574_MULTI() {
-  this->AddressWire(PCF8574_ADDRESS_I2C);
-  this->TypeDev(PCF8574_MULTI_TDEV_PCF8574); 
-  this->NumBoars(PCF8574_MULTI_NUM_BOARDS);
+  this->Init(PCF8574_MULTI_TDEV_PCF8574, PCF8574_MULTI_NUM_BOARDS);
 }
 PCF8574_MULTI::PCF8574_MULTI(byte typedev) {
-  this->TypeDev(typedev);
-  this->AddressWire(PCF8574_ADDRESS_I2C);
-  this->NumBoars(PCF8574_MULTI_NUM_BOARDS);
+  this->Init(typedev, PCF8574_MULTI_NUM_BOARDS);
 }
 PCF8574_MULTI::PCF8574_MULTI(byte typedev,byte nBoards) {
-  this->TypeDev(typedev);
-  this->AddressWire(PCF8574_ADDRESS_I2C);
-  this->NumBoars(nBoards);
+  this->Init(typedev, nBoards);
 }
 
 
 
 
+void PCF8574_MULTI::Init(byte typedev,byte nBoards) {
+  this->TypeDev(typedev);
+  this->NumBoars(nBoards);
+  this->AddressWire(PCF8574_ADDRESS_I2C);
+}
 void PCF8574_MULTI::begin()	{
   if (this->_BEGIN_OK == true ){ return; }
-  
-  for(byte i=0; i < PCF8574_MULTI_MAX_BOARDS; i++)  {
+  byte iboard = 0;
+  for(byte i = 0; i < PCF8574_MULTI_MAX_BOARDS; i++)  {
+	if (i == this->NumBoars()) { break; }
+	
+	iboard = i + 1;
 	this->_PCF8574_DEV[i].AddressWire(this->AddressWire());
-    this->_PCF8574_DEV[i].begin(this->GetAddresByPin(8*i));
-	//TODO: Añadir control de pin ini and pin end
+	this->_PCF8574_DEV[i].AddressI2C(this->GetAddresByPin(iboard * 8));
+    this->_PCF8574_DEV[i].begin();
+	
+	#ifdef DEBUG
+	  Serial.print("- Begin ("); Serial.print(i); Serial.print("): "); Serial.println(this->_PCF8574_DEV[i].isBegin());
+    #endif
   }
   this->_BEGIN_OK = true;
 }
 
 
 
+
+
+int 	PCF8574_MULTI::AddressI2C(byte nb) {
+  if ((nb < 1) || (nb > PCF8574_MULTI_MAX_BOARDS)) { return -1; }
+  return this->_ADDRES_I2C[nb];
+}
+void 	PCF8574_MULTI::AddressI2C(byte nb, int address) {
+  if ((nb < 1) || (nb > PCF8574_MULTI_MAX_BOARDS)) { return; }
+  this->_ADDRES_I2C[nb] = address;
+}
+
+
+
+
 	
-uint8_t PCF8574_MULTI::TypeDev() {
+byte 	PCF8574_MULTI::TypeDev() {
   return this->_DEV_TYPE;
 }
 void 	PCF8574_MULTI::TypeDev(byte type) {
@@ -76,52 +96,46 @@ int  	PCF8574_MULTI::AddressWire() {
 void 	PCF8574_MULTI::AddressWire(int Address_Wire) {
   this->_ADDRES_WIRE = Address_Wire;
 }
+
+
+
+
+int 	PCF8574_MULTI::GetNumBoardByPin(byte pin) {
+  if ((pin < 0) || (pin > PCF8574_MULTI_MAX_PIN)) { return -1; }
+  if (pin == 0) { return 0; }
+  
+  int mm = 0;
+  for (int i = 0; i < PCF8574_MULTI_MAX_BOARDS; i++){
+    mm = pin - (8 * i);
+    if (mm <= 0) {
+	  return i;
+      //break;
+    }
+  }
+  return 0;
+}
 int 	PCF8574_MULTI::GetAddresByPin(byte pin) {
-  if ((pin < 0) || (pin > PCF8574_MULTI_MAX_PIN)) {
-    return -1;
-  }
-  byte AddressSelect = 0x0;
-  if (pin == 0) {
-	return 0;
-  }
-  else if (pin <= 8 ) {
-    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_1_I2C;
-  }
-  else if (pin <= 16 ) {
-    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_2_I2C;
-    pin -= 8;
-  }
-  else if (pin <= 24 ) {
-    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_3_I2C;
-    pin -= 16;
-  }
-  else if (pin <= 32 ) {
-    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_4_I2C;
-    pin -= 24;
-  }
-  else if (pin <= 40 ) {
-    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_5_I2C;
-    pin -=32 ;
-  }
-  else if (pin <= 48 ) {
-    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_6_I2C;
-    pin -= 40;
-  }
-  else if (pin <= 56 ) {
-    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_7_I2C;
-    pin -= 48;
-  }
-  else if (pin <= 64 ) {
-    AddressSelect = PCF8574_MULTI_PCF8574A_ADDRES_8_I2C;
-    pin -= 56;
+  if ((pin < 0) || (pin > PCF8574_MULTI_MAX_PIN)) { return -1; }
+  if (pin > (this->NumBoars() * 8)) {  return -2; }
+  if (pin == 0) { return 0; }
+  
+  int NumBoardInToPin = this->GetNumBoardByPin(pin);
+  int NumBoardInToPinArray = NumBoardInToPin - 1;
+  int AddressBoard = 0x00;
+  
+  if (this->_BEGIN_OK == true ) {
+	AddressBoard = this->_PCF8574_DEV[NumBoardInToPinArray].AddressI2C();
   }
   else {
-    return -2;
+    AddressBoard = this->_ADDRES_I2C[NumBoardInToPinArray];
+	if (AddressBoard == 0x00) {
+	  AddressBoard = PCF8574_MULTI_PCF8574_ADDRES_I2C + NumBoardInToPinArray;
+      if (this->TypeDev() == PCF8574_MULTI_TDEV_PCF8574A) {
+		AddressBoard += PCF8574_MULTI_DIFF_FOR_A;
+      }
+	}
   }
-  if (this->TypeDev() == PCF8574_MULTI_TDEV_PCF8574) {
-    AddressSelect -= PCF8574_MULTI_DIFF_FOR_A;
-  }
-  return AddressSelect;
+  return AddressBoard;
 }
 
 
@@ -132,7 +146,7 @@ uint8_t PCF8574_MULTI::NumBoars() {
 }
 void 	PCF8574_MULTI::NumBoars(byte nBoards) {
 	if (this->_BEGIN_OK == true ) { return; }
-	if (nBoards > PCF8574_MULTI_MAX_BOARDS) { return; }
+	if ((nBoards < 1) || (nBoards > PCF8574_MULTI_MAX_BOARDS)) { return; }
 	this->_NUM_BOARDS = nBoards;
 }
 uint8_t PCF8574_MULTI::NumPinsAll(){
@@ -145,6 +159,7 @@ InfoDatosPin PCF8574_MULTI::GetInfoPin(byte pin) {
   InfoDatosPin pininfo;
   
   pininfo.board = 0;
+  pininfo.boardarray = 0;
   pininfo.pinA = 0;
   pininfo.pinB = 0;
   pininfo.err = true;
@@ -154,9 +169,9 @@ InfoDatosPin PCF8574_MULTI::GetInfoPin(byte pin) {
 	byte npinfor_ini = npinfor_end - 7;
 	if ((pin >= npinfor_ini) && (pin <= npinfor_end)) {
 	  pininfo.board = i;
+	  pininfo.boardarray = i - 1;
 	  pininfo.pinA = pin;
-	  pininfo.pinB = (((8 * (i-1)) - pin) * -1);
-	  pininfo.addressI2C = this->GetAddresByPin(pin);
+	  pininfo.pinB = (((8 * (pininfo.boardarray)) - pin) * -1);
 	  pininfo.err = false;
 	  return pininfo;
 	}
@@ -182,13 +197,13 @@ void 	PCF8574_MULTI::pinMode(byte pin, byte mode) {
   if (pin == 0)
   {
     for (byte i = 1; i <= this->NumBoars(); i++){
-      this->_PCF8574_DEV[i].pinMode(0, mode);
+      this->_PCF8574_DEV[i - 1].pinMode(0, mode);
     }
   }
   else {
 	InfoDatosPin pininfo = this->GetInfoPin(pin);
     if (pininfo.err == true) { return PIN_STATUS_ERR; }
-    this->_PCF8574_DEV[pininfo.board].pinMode(pininfo.pinB, mode);
+    this->_PCF8574_DEV[pininfo.boardarray].pinMode(pininfo.pinB, mode);
   }
 }
 uint8_t PCF8574_MULTI::pinMode(byte pin) {
@@ -197,7 +212,7 @@ uint8_t PCF8574_MULTI::pinMode(byte pin) {
   
   InfoDatosPin pininfo = this->GetInfoPin(pin);
   if (pininfo.err == true) { return -2; }
-  return this->_PCF8574_DEV[pininfo.board].pinMode(pininfo.pinB);
+  return this->_PCF8574_DEV[pininfo.boardarray].pinMode(pininfo.pinB);
 }
 
 
@@ -222,7 +237,12 @@ bool 	PCF8574_MULTI::digitalWrite(byte pin, byte newstatus) {
   if (this->PinIsValid(pin) == false) { return false; }
   
   if (pin == 0 ) {
-    for (byte i = 1; i <= this->NumBoars(); i++){
+    for (byte i = 0; i < this->NumBoars(); i++){
+	  if (i == this->NumBoars()) { break; }
+	  #ifdef DEBUG
+	    Serial.print("Write - Pin 0 - Begin ("); Serial.print(i); Serial.print("): "); Serial.println(this->_PCF8574_DEV[i].isBegin()); 
+		Serial.print("Write - Pin 0 - Address ("); Serial.print(i); Serial.print("): "); Serial.print(this->_PCF8574_DEV[i].AddressI2C()); Serial.print(" / "); Serial.println(this->_PCF8574_DEV[i].AddressI2C(), HEX); 
+	  #endif
       this->_PCF8574_DEV[i].digitalWrite(0, newstatus);
     }
 	return true;
@@ -230,7 +250,14 @@ bool 	PCF8574_MULTI::digitalWrite(byte pin, byte newstatus) {
   
   InfoDatosPin pininfo = this->GetInfoPin(pin);
   if (pininfo.err == true) { return PIN_STATUS_ERR; } 
-  return this->_PCF8574_DEV[pininfo.board].digitalWrite(pininfo.pinB, newstatus);
+  
+  #ifdef DEBUG
+    Serial.print("Write - Pin ("); Serial.print(pin); Serial.print(" / "); Serial.print(pininfo.pinB); Serial.print(" - NewStatus: "); Serial.println(newstatus);
+    Serial.print("Write - Begin ("); Serial.print(pininfo.boardarray); Serial.print("): "); Serial.println(this->_PCF8574_DEV[pininfo.boardarray].isBegin()); 
+	Serial.print("Write - Address ("); Serial.print(pininfo.boardarray); Serial.print("): "); Serial.print(this->_PCF8574_DEV[pininfo.boardarray].AddressI2C()); Serial.print(" / "); Serial.println(this->_PCF8574_DEV[pininfo.boardarray].AddressI2C(), HEX); 
+  #endif
+  
+  return this->_PCF8574_DEV[pininfo.boardarray].digitalWrite(pininfo.pinB, newstatus);
 }
 
 
@@ -254,7 +281,14 @@ uint8_t PCF8574_MULTI::digitalRead(byte pin) {
   
   InfoDatosPin pininfo = this->GetInfoPin(pin);
   if (pininfo.err == true) { return PIN_STATUS_ERR; } 
-  return this->_PCF8574_DEV[pininfo.board].digitalRead(pininfo.pinB);
+  
+  #ifdef DEBUG
+    Serial.print("Read - Pin ("); Serial.print(pin); Serial.print(" / "); Serial.println(pininfo.pinB);
+    Serial.print("Read - Begin ("); Serial.print(pininfo.boardarray); Serial.print("): "); Serial.println(this->_PCF8574_DEV[pininfo.boardarray].isBegin()); 
+	Serial.print("Read - Address ("); Serial.print(pininfo.boardarray); Serial.print("): "); Serial.print(this->_PCF8574_DEV[pininfo.boardarray].AddressI2C()); Serial.print(" / "); Serial.println(this->_PCF8574_DEV[pininfo.boardarray].AddressI2C(), HEX); 
+  #endif
+  
+  return this->_PCF8574_DEV[pininfo.boardarray].digitalRead(pininfo.pinB);
 }
 
 
