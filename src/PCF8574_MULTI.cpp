@@ -46,14 +46,14 @@ PCF8574_MULTI::PCF8574_MULTI(byte typedev,byte nBoards) {
 
 void PCF8574_MULTI::Init(byte typedev,byte nBoards) {
   this->TypeDev(typedev);
-  this->NumBoars(nBoards);
+  this->NumBoards(nBoards);
   this->AddressWire(PCF8574_ADDRESS_I2C);
 }
 void PCF8574_MULTI::begin()	{
   if (this->_BEGIN_OK == true ){ return; }
   byte iboard = 0;
   for(byte i = 0; i < PCF8574_MULTI_MAX_BOARDS; i++)  {
-	if (i == this->NumBoars()) { break; }
+	if (i == this->NumBoards()) { break; }
 	
 	iboard = i + 1;
 	this->_PCF8574_DEV[i].AddressWire(this->AddressWire());
@@ -116,7 +116,7 @@ int 	PCF8574_MULTI::GetNumBoardByPin(byte pin) {
 }
 int 	PCF8574_MULTI::GetAddresByPin(byte pin) {
   if ((pin < 0) || (pin > PCF8574_MULTI_MAX_PIN)) { return -1; }
-  if (pin > (this->NumBoars() * 8)) {  return -2; }
+  if (pin > (this->NumBoards() * 8)) {  return -2; }
   if (pin == 0) { return 0; }
   
   int NumBoardInToPin = this->GetNumBoardByPin(pin);
@@ -141,16 +141,16 @@ int 	PCF8574_MULTI::GetAddresByPin(byte pin) {
 
 
 
-uint8_t PCF8574_MULTI::NumBoars() {
+uint8_t PCF8574_MULTI::NumBoards() {
 	return this->_NUM_BOARDS;
 }
-void 	PCF8574_MULTI::NumBoars(byte nBoards) {
+void 	PCF8574_MULTI::NumBoards(byte nBoards) {
 	if (this->_BEGIN_OK == true ) { return; }
 	if ((nBoards < 1) || (nBoards > PCF8574_MULTI_MAX_BOARDS)) { return; }
 	this->_NUM_BOARDS = nBoards;
 }
 uint8_t PCF8574_MULTI::NumPinsAll(){
-	return this->NumBoars() * 8;
+	return this->NumBoards() * 8;
 }
 
 
@@ -196,7 +196,7 @@ void 	PCF8574_MULTI::pinMode(byte pin, byte mode) {
   
   if (pin == 0)
   {
-    for (byte i = 1; i <= this->NumBoars(); i++){
+    for (byte i = 1; i <= this->NumBoards(); i++){
       this->_PCF8574_DEV[i - 1].pinMode(0, mode);
     }
   }
@@ -237,8 +237,8 @@ bool 	PCF8574_MULTI::digitalWrite(byte pin, byte newstatus) {
   if (this->PinIsValid(pin) == false) { return false; }
   
   if (pin == 0 ) {
-    for (byte i = 0; i < this->NumBoars(); i++){
-	  if (i == this->NumBoars()) { break; }
+    for (byte i = 0; i < this->NumBoards(); i++){
+	  if (i == this->NumBoards()) { break; }
 	  #ifdef DEBUG
 	    Serial.print("Write - Pin 0 - Begin ("); Serial.print(i); Serial.print("): "); Serial.println(this->_PCF8574_DEV[i].isBegin()); 
 		Serial.print("Write - Pin 0 - Address ("); Serial.print(i); Serial.print("): "); Serial.print(this->_PCF8574_DEV[i].AddressI2C()); Serial.print(" / "); Serial.println(this->_PCF8574_DEV[i].AddressI2C(), HEX); 

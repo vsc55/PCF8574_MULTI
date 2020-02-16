@@ -7,7 +7,7 @@ digitalRead	KEYWORD2
 TypeDev		KEYWORD2
 AddressWire	KEYWORD2
 AddressI2C	KEYWORD2
-NumBoars	KEYWORD2
+NumBoards	KEYWORD2
 
 PinIsValid	KEYWORD2
 NumPinsAll	KEYWORD2

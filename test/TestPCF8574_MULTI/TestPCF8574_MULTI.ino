@@ -7,7 +7,7 @@ void setup() {
 
   PCF8574_MULTI_A.TypeDev(PCF8574_MULTI_TDEV_PCF8574A);
   //PCF8574_MULTI_A.AddressI2C(1, 0x32);
-  PCF8574_MULTI_A.NumBoars(1);
+  PCF8574_MULTI_A.NumBoards(1);
   PCF8574_MULTI_A.begin();
 }
 
@@ -42,7 +42,7 @@ void loop() {
 
 
   Serial.print("Num Boards:");
-  Serial.println(PCF8574_MULTI_A.NumBoars());
+  Serial.println(PCF8574_MULTI_A.NumBoards());
   delay(500);
 
 

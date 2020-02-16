@@ -86,8 +86,8 @@ class PCF8574_MULTI
 	bool 	PCF8574_MULTI::PinIsValid(byte pin);
 	uint8_t PCF8574_MULTI::NumPinsAll();
 	
-	uint8_t PCF8574_MULTI::NumBoars();
-    void 	PCF8574_MULTI::NumBoars(byte nBoards);
+	uint8_t PCF8574_MULTI::NumBoards();
+    void 	PCF8574_MULTI::NumBoards(byte nBoards);
 	
     bool 	PCF8574_MULTI::digitalWrite(byte pin, byte newstatus);
     uint8_t PCF8574_MULTI::digitalRead(byte pin);

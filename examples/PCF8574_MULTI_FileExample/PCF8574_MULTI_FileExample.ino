@@ -51,7 +51,7 @@ void setup() {
     Configuramos en 3 el número de placas que vamos a controlar.
     NOTA: Una vez iniciado el objeto con la función Begin, no se podrá modificar.
   */
-  PCF8574_MULTI_A.NumBoars(3);
+  PCF8574_MULTI_A.NumBoards(3);
 
 
   /*
